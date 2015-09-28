@@ -1,0 +1,42 @@
+CREATE TABLE `buenisimo`.`cup_cupon_detalle`(  
+  `codigo_cupon` varchar(45) NOT NULL,
+  `id_cupon` int(11) NOT NULL,
+  `precio_unitario` decimal(12,2) NOT NULL,
+  `id_estado_cupon` int(11) NOT NULL,
+  `fecha_cancelacion` datetime DEFAULT NULL,
+  `fecha_devolucion` datetime DEFAULT NULL,
+  `fecha_validacion` datetime DEFAULT NULL,
+  `fecha_vencimiento` datetime DEFAULT NULL,
+  `fecha_liquidacion` datetime DEFAULT NULL,
+  `fecha_pago` datetime DEFAULT NULL,
+  PRIMARY KEY (`codigo_cupon`),
+  FOREIGN KEY (`id_cupon`) REFERENCES `buenisimo`.`cup_cupon`(`id_cupon`)
+);
+
+
+ALTER TABLE `buenisimo`.`cup_cupon`   
+  DROP COLUMN `codigo_cupon`, 
+  DROP COLUMN `fecha_validacion`, 
+  DROP COLUMN `fecha_liquidacion`;
+  
+drop TABLE `cup_liquidacion_cupon`
+
+CREATE TABLE `cup_liquidacion_cupon` (
+  `id_liquidacion` INT(11) NOT NULL,
+  `codigo_cupon` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`id_liquidacion`,`codigo_cupon`),
+  KEY `fk_cup_liquidacion_has_cup_cupon_cup_cupon1_idx` (`codigo_cupon`),
+  KEY `fk_cup_liquidacion_has_cup_cupon_cup_liquidacion1_idx` (`id_liquidacion`),
+  CONSTRAINT `fk_cup_liquidacion_has_cup_cupon_cup_cupon1` FOREIGN KEY (`codigo_cupon`) REFERENCES `cup_cupon_detalle` (`codigo_cupon`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_cup_liquidacion_has_cup_cupon_cup_liquidacion1` FOREIGN KEY (`id_liquidacion`) REFERENCES `cup_liquidacion` (`id_liquidacion`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=INNODB DEFAULT CHARSET=utf8
+
+
+ALTER TABLE `buenisimo`.`user`   
+  ADD COLUMN `id_operador` INT(11) NULL AFTER `role_id`,
+  ADD FOREIGN KEY (`id_operador`) REFERENCES `buenisimo`.`cup_operador`(`id_operador`) ON UPDATE RESTRICT ON DELETE NO ACTION;
+
+  
+  ALTER TABLE `buenisimo`.`user`   
+  ADD COLUMN `id_empresa` INT(11) NULL AFTER `id_operador`,
+  ADD FOREIGN KEY (`id_empresa`) REFERENCES `buenisimo`.`gen_empresa`(`id_empresa`) ON UPDATE NO ACTION ON DELETE NO ACTION;

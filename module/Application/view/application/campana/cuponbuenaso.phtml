@@ -1,0 +1,42 @@
+<div class="container">
+    <div class="borde-cupon-externo">
+        <div class="separacion-cupon">
+            <div class="en-linea logo-oferta"><div class="logo-fijo-cupon"></div></div>
+            <div class="en-linea texto"><p class="letra-cupon">Número de Cupón: <?php echo $datos["codigo_cupon"];?><?php if($datos["cantidad"] > 1) { echo ' - ...'; }?><br>Válido por <?php echo $datos["cantidad"];?> <?php if($datos["cantidad"] > 1) { echo 'cupones'; } else { echo 'cupón'; }?></p></div>
+        </div>
+        <div class="separacion-cupon">
+            <div class="en-linea logo-oferta"><img src="../../../img/<?php echo $datos['id_campana']; ?>/small2/image1.jpg"></div>
+            <div class="en-linea texto"><p class="letra-cupon">Tu compra en Rebueno:<br><?php echo $datos["campana_descripcion"];?></p>
+                    <p class="letra-cupon-min">Fecha Compra : <?php echo $datos["fecha_compra"];?></p>
+                    <?php if( !empty($datos["fecha_validez"]) ) { ?>
+                    <p class="letra-cupon-min">Fecha Válidez : <?php echo $datos["fecha_validez"];?></p>
+                    <?php } ?>
+            </div>
+        </div>
+        <div class="separacion-cupon">
+            <div><p><b>La oferta incluye:</b><br><?php echo $datos["sobre_campana"];?></p></div>
+        </div>
+        <div class="separacion-empresa">
+            <div><p><b>Nuestro Proveedor:</b></div>
+            <div><?php echo $datos["razon_social"]; ?></div>
+            <div>
+                <div class="en-linea empresa">
+                    <div><?php echo $datos["descripcion_empresa"]; ?></div>
+                    <div><b>Sitio Web:</b></div>
+                    <div><?php echo $datos["web_site"]; ?></div>
+                    <div><b>Dirección:</b></div>
+                    <div><?php echo $datos["direccion"]; ?></div>
+                    <div><b>Horario:</b></div>
+                    <div><?php echo $datos["horario"]; ?></div>
+                </div>
+                <div class="en-linea mapa"><img id="companyMap" src="<?php echo $datos["ubicacion_gps"]; ?>"></div>
+            </div>
+        </div>
+    </div>
+    
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".carrusel-principal").css("display","none");
+    });
+</script>
