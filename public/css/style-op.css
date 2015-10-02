@@ -1369,6 +1369,11 @@ section {
     //background-size: 100% 240px;
 }
 
+.campana-en-linea {
+    width: 100%;
+    display:table;
+}
+
 .campana-stilo-uno {
     margin-bottom: 10px;
     margin-top: 10px;
@@ -1381,7 +1386,7 @@ section {
     //height: 360px;
     display:inline-block;
     background-color: #ffffff;
-    box-shadow: 0px 0px 3px 3px #d6d3d3;
+    box-shadow: 0px 0px 1px 1px #d6d3d3;
 }
 
 .campana-stilo-uno.left {
@@ -1396,7 +1401,7 @@ section {
 
 
 .campana-stilo-uno:hover {
-    box-shadow: 0px 0px 3px 3px #ff0014;
+    box-shadow: 0px 0px 2px 2px #ff0014;
 }
 
 .lazy.campana-imgreferencia-uno{
@@ -1442,6 +1447,10 @@ section {
     color:#ff0014;
     padding-left: 8px;
     padding-right: 8px;
+    padding-top: 0px;
+    width: 33%;
+    min-width: 100px;
+    display: inline-block;
 }
 
 .campana-tarifario-uno {
@@ -1457,6 +1466,28 @@ section {
 .campana-tarifario-uno > simbolo {
     color: black !important;
     font-size: 12px !important;
+}
+
+.campana-precio-regular {
+    color: black !important;
+    font-size: 12px !important;
+    width: 33% !important;
+    min-width: 75px;
+    display: inline-block;
+    float: left;
+    vertical-align: middle;
+    height: 30px;
+}
+
+.campana-precio-boton {
+    width: 30% !important;
+    display: inline-block;
+    padding-right: 5px;
+    min-width: 110px;
+}
+
+.campana-precio-center {
+    padding: 5% 0;
 }
 
 .btn.btn-ver-oferta-uno {
@@ -1498,7 +1529,7 @@ section {
     //height: 440px;
     display:inline-block;
     background-color: #ffffff;
-    box-shadow: 0px 0px 3px 3px #d6d3d3;
+    box-shadow: 0px 0px 1px 1px #d6d3d3;
 }
 
 .campana-stilo-dos.left {
@@ -1510,7 +1541,7 @@ section {
 }
 
 .campana-stilo-dos:hover {
-    box-shadow: 0px 0px 3px 3px #ff0014;
+    box-shadow: 0px 0px 2px 2px #ff0014;
 }
 
 .lazy.campana-imgreferencia-dos{
@@ -1556,6 +1587,9 @@ section {
     color:#ff0014;
     padding-left: 8px;
     padding-right: 8px;
+    width: 33%;
+    min-width: 115px;
+    display: inline-block;
 }
 
 .campana-tarifario-dos {
@@ -2066,7 +2100,7 @@ section {
         //height: 290px;
         display:block;
         background-color: #ffffff;
-        box-shadow: 0px 0px 3px 3px #d6d3d3;
+        box-shadow: 0px 0px 1px 1px #d6d3d3;
     }
     
     .campana-stilo-uno.left,
@@ -2083,7 +2117,7 @@ section {
     
     .campana-stilo-uno:hover,
     .campana-stilo-dos:hover {
-        box-shadow: 0px 0px 3px 3px #ff0014;  
+        box-shadow: 0px 0px 2px 2px #ff0014;  
     }
     
     .lazy.campana-imgreferencia-uno,

@@ -33,6 +33,7 @@ foreach ($data as $dato) {
         <section id="<?php echo base64_encode($dato['categoria']); ?>">
             <div class="titulo_ofertas_categoria">Mostrando resultados para <b><?php echo $dato['categoria']; ?><?php if( $subcategoria != null ) { ?> ( <?php echo $dato['subcategoria']; ?> )<?php } ?></b></div>
             <div class="box_center"><div>
+                    <div class="campana-en-linea">
                     <?php
                 }
                 $contador++;
@@ -41,6 +42,10 @@ foreach ($data as $dato) {
                         $contador = 1;
                         $ultimo = 'dos';
                         $position = ' left';
+                         ?>
+                        </div>
+                        <div class="campana-en-linea">
+                        <?php
                     } else {
                         switch($contador) {
                             case 1: $position = ' left';
@@ -56,6 +61,10 @@ foreach ($data as $dato) {
                         $contador = 1;
                         $ultimo = 'uno';
                         $position = ' left';
+                         ?>
+                        </div>
+                        <div class="campana-en-linea">
+                        <?php
                     } else {
                         switch($contador) {
                             case 1: $position = ' left';
@@ -81,8 +90,9 @@ foreach ($data as $dato) {
                         <a href="/campana/detalle/<?php echo crearUrl($dato['subtitulo']).'--'.base64_encode($dato['id_campana']); ?>" target="_self" title="<?php echo $dato['subtitulo']; ?>" class="description"><?php echo $dato['subtitulo']; ?></a>
                     </div>
                     <div class="campana-tarifario-<?php echo $ultimo;?>">
-                        <s><?php echo $moneda['simbolo'];?> <?php echo $dato['precio_regular']; ?></s>        <span class="campana-precio-oferta-<?php echo $ultimo;?>"><?php echo $moneda['simbolo'];?> <?php echo $dato['precio_especial']; ?></span>
-                        <a class="btn btn-ver-oferta-<?php echo $ultimo;?>" href="/campana/detalle/<?php echo crearUrl($dato['subtitulo']).'--'.base64_encode($dato['id_campana']); ?>" title="Ver oferta">Ver oferta »</a>
+                        <div class="campana-precio-regular"><div class="campana-precio-center"><?php echo $moneda['simbolo'];?> <?php echo $dato['precio_regular']; ?></div></div>
+                        <div class="campana-precio-oferta-<?php echo $ultimo;?>"><?php echo $moneda['simbolo'];?>&nbsp;<?php echo $dato['precio_especial']; ?></div>
+                        <div class="campana-precio-boton"><a class="btn btn-ver-oferta-<?php echo $ultimo;?>" href="/campana/detalle/<?php echo crearUrl($dato['subtitulo']).'--'.base64_encode($dato['id_campana']); ?>.html" title="Ver oferta">Ver oferta »</a></div>
                     </div>
                     <p class="campana-vendidos-<?php echo $ultimo;?>">Vendidos: <?php echo $dato['vendidos']; ?> ofertas</p>
                 </div>
@@ -96,6 +106,7 @@ foreach ($data as $dato) {
                 ?>
             </div> 
         </div>
+                </div>
     </section>
     <?php
 }
