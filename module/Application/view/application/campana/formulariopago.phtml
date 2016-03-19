@@ -1,14 +1,20 @@
 <div class="container">
 <form name="frmpago" role="form" action="/campana/pago" method="POST" data-parsley-validate>
+    <div>
+    <?php foreach ($data_o as $dato) { ?>
+    <input type="hidden" class="form-control" name="nameproducto" id="nameproducto" value="<?php echo substr(strip_tags($dato['descripcion']),0,26).' ...'; ?>">
+    <?php } ?>
     <div class="section_payment">
         <?php if (($fl != null && $fl == '2') || isset($user_session->username) ) { ?>
             <h3>Tus Datos</h3>
-            <?php if($user_session->facebook == 'S') {?>
+            <?php if($user_session->facebook['login'] == 'S') {?>
             <div class="form-group">
                 <label class="col-lg-2 control-label"></label>
                 <div class="col-xs-7">
-                <input type="hidden" class="form-control" name="facebook" id="facebook" value="<?php echo $user_session->facebook;?>">
+                <input type="hidden" class="form-control" name="facebook" id="facebook" value="<?php echo $user_session->facebook['login'];?>">
                 <input type="hidden" class="form-control" name="email" id="email" value="<?php echo $user_session->username;?>">
+                <input type="hidden" class="form-control" name="nombre" id="email" value="<?php echo $user_session->nombre;?>">
+                <input type="hidden" class="form-control" name="apellido" id="email" value="<?php echo $user_session->apellido;?>">
                 <div class="cfacebook">Conectado con Facebook</div>
                 </div>
             </div>
@@ -21,22 +27,24 @@
             </div>
             <?php } else { ?>
             <div class="form-group">
-                <label for="nombre" class="col-lg-2 control-label">Nombres:</label>
+                <label for="nombres" class="col-lg-2 control-label">Nombres:</label>
                 <div class="col-xs-7"> 
                     <input type="hidden" class="form-control" name="email" id="email" value="<?php echo $user_session->username;?>">
-                    <input type="text" class="form-control" name="nombre" id="nombre" value="<?php echo $user_session->nombre;?>" disabled>
+                    <input type="hidden" class="form-control" name="nombre" id="email" value="<?php echo $user_session->nombre;?>">
+                    <input type="hidden" class="form-control" name="apellido" id="email" value="<?php echo $user_session->apellido;?>">
+                    <input type="text" class="form-control" name="nombres" id="nombres" value="<?php echo $user_session->nombre;?>" disabled>
                     <span class="help-block with-errors"></span>
                 </div>
             </div>
             <div class="form-group">
-                <label for="apellido" class="col-lg-2 control-label">Apellidos:</label>
+                <label for="apellidos" class="col-lg-2 control-label">Apellidos:</label>
                 <div class="col-xs-7">
-                    <input type="text" class="form-control" name="apellido" id="apellido" maxlength="50" pattern="^[A-z-ñáéíóúÑÁÉÍÓÚ ]+$" data-error="Solo letras, espacios y guiones (-)."  required  value="<?php echo $user_session->apellido;?>" disabled>
+                    <input type="text" class="form-control" name="apellidos" id="apellidos" maxlength="50" pattern="^[A-z-ñáéíóúÑÁÉÍÓÚ ]+$" data-error="Solo letras, espacios y guiones (-)."  required  value="<?php echo $user_session->apellido;?>" disabled>
                     <span class="help-block with-errors"></span>
                 </div>
             </div>
             <div class="form-group">
-                <label for="tpdoc" class="col-lg-2 control-label">Tipo de documento:</label>
+                <label for="tpdoc" class="col-lg-2 control-label">Tipo documento:</label>
                 <div class="col-xs-7">
                     <select class="form-control" name="tipdoc" id="tipdoc" data-error="Seleccione una opción." required disabled>
                         <option value="DNI" label="DNI">DNI</option>
@@ -48,7 +56,7 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="numdoc" class="col-lg-2 control-label">Número de documento:</label>
+                <label for="numdoc" class="col-lg-2 control-label">Número documento:</label>
                 <div class="col-xs-7">
                     <input type="text" class="form-control" name="numdoc" id="numdoc" pattern="^[A-z0-9-ñáéíóúÑÁÉÍÓÚ]+$" data-error="Solo letras, números y guiones (-)." required  value="<?php echo $user_session->numdoc;?>" disabled>
                     <span class="help-block with-errors"></span>
@@ -89,11 +97,12 @@
             </div>
             <!--div class="fb-login-button" data-max-rows="1" data-size="large" data-show-faces="false" data-auto-logout-link="false" onlogin="checkLoginState();">Conectar con Facebook</div-->
             <a class="btn btn-block btn-social btn-facebook" href="javascript:loginFacebook();">
-                                        <i class="fa fa-facebook"></i> Conectar con Facebook
-                                    </a>
-            <br>
+                <i class="fa fa-facebook"></i> Conectar con Facebook
+                </a>
+
+
             <hr class="special">
-            <br>
+
             <div class="form-group">
                 <label for="email" class="col-lg-2 control-label"><span class="required">* </span>Email:</label>
                 <div class="col-xs-7">
@@ -144,7 +153,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="tpdoc" class="col-lg-2 control-label"><span class="required">* </span>Tipo de documento:</label>
+                    <label for="tpdoc" class="col-lg-2 control-label"><span class="required">* </span>Tipo documento:</label>
                     <div class="col-xs-7">
                         <select class="form-control" name="tipdoc" id="tipdoc" data-error="Seleccione una opción." required>
                             <option value="DNI" label="DNI">DNI</option>
@@ -156,7 +165,7 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="numdoc" class="col-lg-2 control-label"><span class="required">* </span>Número de documento:</label>
+                    <label for="numdoc" class="col-lg-2 control-label"><span class="required">* </span>Número documento:</label>
                     <div class="col-xs-7">
                         <input type="text" class="form-control" name="numdoc" id="numdoc" pattern="^[A-z0-9-ñáéíóúÑÁÉÍÓÚ]+$" data-error="Solo letras, números y guiones (-)." required>
                         <span class="help-block with-errors"></span>
@@ -192,14 +201,26 @@
         }
         ?>
     </div>
-    <?php foreach ($data_o as $dato) { ?>
+    <?php foreach ($data_o as $dato) { 
+            $ruta_imagen_pro = $directorio.$id.$sep_path .'small2'.$sep_path.'image1.jpg';
+            if (file_exists($ruta_imagen_pro)){
+                ob_start();
+                $resource_image = imagecreatefromjpeg($ruta_imagen_pro);
+                imagejpeg($resource_image);
+                $imagedata = ob_get_clean();
+                $image = 'data:image/jpeg;base64,'.base64_encode($imagedata);
+            } else {
+                $image = '';
+            }
+     ?>
+
         <div class="section_payment">
             <h3>Confirma tu pedido</h3>
             <div class="box_payment">
                 <h4 class="titulo_negro">Producto</h4>
                 <div class="box_center_info">
-                    <img class="img_container_pago" src="/img/<?php echo $id; ?>/small2/image1.jpg">
-                    <span><?php echo $dato['descripcion']; ?></span>
+                    <img class="img_container_pago" src="<?php echo $image; ?>">
+                    <span class="confirma-detalle"><?php echo strip_tags($dato['descripcion']); ?></span>
                 </div>
                 <div class="box_quantity">
                     <span class="quantity">
@@ -210,7 +231,7 @@
                         <span id="lblPriceUnit" class="price_subtotal"><?php echo $moneda['simbolo'];?> <?php echo $dato['precio_especial']; ?></span>
                         <span class="form_quantity">
                             <span>Cant: </span>
-                            <input class="text_cantidad" type="text" name="cantidad" id="txtQuantity" value="1" required="" data-parsley-trigger="change focusin keyup" data-parsley-min="1" data-parsley-min-message="Debe comprar un mínimo de 1" data-parsley-max="10" data-parsley-max-message="Debe comprar un máximo de 10" maxlength="3" data-parsley-type="digits" data-parsley-required-message="Ingrese una cantidad." data-parsley-errors-container=".error_quantity">                </span>
+                            <input class="text_cantidad" type="text" name="cantidad" id="txtQuantity" value="1" required="" data-parsley-trigger="change focusin keyup" data-parsley-min="1" data-parsley-min-message="Debe comprar un mínimo de 1" data-parsley-max="10" data-parsley-max-message="Debe comprar un máximo de 10" maxlength="3" data-parsley-type="digits" data-parsley-required-message="Ingrese una cantidad." data-parsley-errors-container=".error_quantity" <?php if( $dato['precio_especial'] == '0.00' ) { ?>readonly<?php } ?>>                </span>
                     </span><br><br>
                 </div>
                 <div id="boxStockError" class="box_info error hide">
@@ -230,10 +251,25 @@
         <div class="box_payment">
             <h4 class="titulo_negro">Método de Pago </h4>
             <!-- P3_Comprar -->
-            <div class="metodo_pago">
+            <!--div class="metodo_pago">
                 <label for="radPayVisa" class="ioption">
                     <input id="radPayVisa" name="metodo" type="radio" value="001" checked><span><img src="/img/tarjetas/visa.jpg"></span>
                     <div class="cb">Paga con Tarjeta de Crédito Visa</div>
+                </label>
+            </div-->
+            <?php if( $dato['precio_especial'] == '0.00' ) { ?>
+            <div class="metodo_pago">
+                <label for="radPayBanco" class="ioption">
+                    <input id="radPayBanco" name="metodo" type="radio" value="OFE" checked><span><img src="/img/tarjetas/especial.jpg"></span>
+                    <div class="cb">Costo cero</div>
+                </label>
+            </div>
+            <?php } else { ?>
+            <div class="metodo_pago">
+                <label for="radPayPayme" class="ioption">
+                    <input id="radPayPayme" name="metodo" type="radio" value="PAY" checked><span><img src="/img/tarjetas/aceptadas.jpg"></span>
+                    <div class="cb">Paga en linea con total seguridad sin necesidad de ingresar tus datos personales, ni los de tu tarjeta en tus próximas compras, trabajamos con las tarjetas de mayor acepatación.</div>
+                    <div class="cb-todas"><img src="/img/tarjetas/payme.jpg"></div>
                 </label>
             </div>
             <div class="metodo_pago">
@@ -242,14 +278,28 @@
                     <div class="cb">Paga con transferencia o depósito Bancario</div>
                 </label>
             </div>
+            <?php } ?>
             <div class="metodo_pago terminos">
                 <input type="hidden" name="terminospay" value="0"><input type="checkbox" name="terminospay" id="chkTermsPay" value="1" checked="checked" required="" data-parsley-trigger="change" data-parsley-errors-container=".terms_error_pay">
                 Acepto los <a href="/interes/terminosycondiciones" target="_blank" title="Términos y Condiciones">Términos y Condiciones</a>, y <a href="/interes/politicasdeprivacidad" title="Políticas de Privacidad" target="_blank">Políticas de Privacidad</a>
             </div>
-            <div class="metodo_pago">
+            <?php if (($fl != null && $fl == '2') || isset($user_session->username) ) { ?>
+            <div class="metodo_pago-total">
                 <button type="submit" class="btn btn_buy_action">Pagar</button>
             </div>
+            <?php } else { ?>
+                <?php if ($fl != null) { ?>
+                <div class="metodo_pago-total">
+                    <button type="submit" class="btn btn_buy_action disabled">Pagar</button>
+                </div>
+                <?php } else { ?>
+                <div class="metodo_pago-total">
+                    <button type="submit" class="btn btn_buy_action">Pagar</button>
+                </div>
+                <?php } ?>
+            <?php } ?>
         </div>
+    </div>
     </div>
 </form>
 </div>
