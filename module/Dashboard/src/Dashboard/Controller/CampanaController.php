@@ -1,10 +1,5 @@
 <?php
 
-/**
- * CampanaController - This allows add, delete and edit users
- * @autor Francis Gonzales <fgonzalestello91@gmail.com>
- */
-
 namespace Dashboard\Controller;
 
 use Dashboard\Form\CampanaForm;
@@ -88,7 +83,7 @@ class CampanaController extends AbstractActionController {
         $col->setWidth(20);
         $grid->addColumn($col);
 
-        $col = new Column\Select('razon_social', 'e');
+        $col = new Column\Select('nombre_comercial', 'e');
         $col->setLabel('Empresa');
         $col->setWidth(15);
         $grid->addColumn($col);
@@ -99,7 +94,7 @@ class CampanaController extends AbstractActionController {
         $editBtn->setAttribute('href', '/dashboard/campana/edit/id/' . $editBtn->getRowIdPlaceholder());
         $editBtn->setAttribute('data-toggle', 'tooltip');
         $editBtn->setAttribute('data-placement', 'left');
-        $editBtn->setAttribute('title', 'Editar Campaña');
+        $editBtn->setAttribute('title', 'Modificar Campaña');
 
         $preBtn = new Column\Action\Button();
         $preBtn->setLabel(' ');
@@ -112,7 +107,7 @@ class CampanaController extends AbstractActionController {
         $conBtn = new Column\Action\Button();
         $conBtn->setLabel(' ');
         $conBtn->setAttribute('class', 'btn btn-info glyphicon glyphicon-list-alt');
-        $conBtn->setAttribute('href', 'javascript:registrarcontrato('. $conBtn->getRowIdPlaceholder().');');
+        $conBtn->setAttribute('href', 'javascript:registraranexocontrato('. $conBtn->getRowIdPlaceholder().');');
         $conBtn->setAttribute('data-toggle', 'tooltip');
         $conBtn->setAttribute('data-placement', 'left');
         $conBtn->setAttribute('title', 'Contrato Campaña');
@@ -134,8 +129,23 @@ class CampanaController extends AbstractActionController {
         $config = $serviceLocator->get('Config');
         $dir_image = $config['constantes']['dir_image'];
         $sep_path = $config['constantes']['sep_path'];
-
+        
+        $dir_imagenes = $config['rutas']['dir_principal'] .
+                        $sep_path .
+                        $config['rutas']['dir_imgcampanas'];
+        
         $campanaId = $this->params('id');
+        
+        $ruta_imagenes = $dir_image . 
+                    $sep_path . 
+                    ".." .
+                    $sep_path .
+                    ".." .
+                    $sep_path .
+                    $dir_imagenes .
+                    $sep_path .
+                    $campanaId .
+                    $sep_path;
 
         $edit_campana = new Container('edit_campana');
         $edit_campana->id = $campanaId;
@@ -181,6 +191,10 @@ class CampanaController extends AbstractActionController {
                 $form->get('fecha_final')->setValue($campana['fecha_final']);
                 $form->get('hora_final')->setValue($campana['hora_final']);
                 $form->get('fecha_validez')->setValue($campana['fecha_validez']);
+                $form->get('cantidad_cupones')->setValue($campana['cantidad_cupones']);
+                $form->get('tiempo_online')->setValue($campana['tiempo_online']);
+                $form->get('tiempo_offline')->setValue($campana['tiempo_offline']);
+                $form->get('comision_campana')->setValue($campana['comision_campana']);
             }
         }
 
@@ -199,6 +213,7 @@ class CampanaController extends AbstractActionController {
         $viewmodel->form = $form;
         $viewmodel->setVariable('opciones', $opcionCampana);
         $viewmodel->setVariable('categorias', $categoriaCampana);
+        $viewmodel->setVariable('ruta_imagenes', $ruta_imagenes);
 
         return $viewmodel;
     }

@@ -27,7 +27,11 @@ class Cupcampana {
     public  $id_empresa;
     public  $id_user;
     public  $fecha_registro;
-    
+    public  $cantidad_cupones;
+    public  $tiempo_online;
+    public  $tiempo_offline;
+    public  $comision_campana;
+            
     function getId_campana() {
         return $this->id_campana;
     }
@@ -43,11 +47,11 @@ class Cupcampana {
     function getDescripcion() {
         return $this->descripcion;
     }
-    
+
     function getSobre_campana() {
         return $this->sobre_campana;
     }
-    
+
     function getObservaciones() {
         return $this->observaciones;
     }
@@ -84,6 +88,22 @@ class Cupcampana {
         return $this->fecha_registro;
     }
 
+    function getCantidad_cupones() {
+        return $this->cantidad_cupones;
+    }
+
+    function getTiempo_online() {
+        return $this->tiempo_online;
+    }
+
+    function getTiempo_offline() {
+        return $this->tiempo_offline;
+    }
+
+    function getComision_campana() {
+        return $this->comision_campana;
+    }
+
     function setId_campana($id_campana) {
         $this->id_campana = $id_campana;
     }
@@ -99,11 +119,11 @@ class Cupcampana {
     function setDescripcion($descripcion) {
         $this->descripcion = $descripcion;
     }
-    
+
     function setSobre_campana($sobre_campana) {
         $this->sobre_campana = $sobre_campana;
     }
-    
+
     function setObservaciones($observaciones) {
         $this->observaciones = $observaciones;
     }
@@ -140,6 +160,23 @@ class Cupcampana {
         $this->fecha_registro = $fecha_registro;
     }
 
+    function setCantidad_cupones($cantidad_cupones) {
+        $this->cantidad_cupones = $cantidad_cupones;
+    }
+
+    function setTiempo_online($tiempo_online) {
+        $this->tiempo_online = $tiempo_online;
+    }
+
+    function setTiempo_offline($tiempo_offline) {
+        $this->tiempo_offline = $tiempo_offline;
+    }
+
+    function setComision_campana($comision_campana) {
+        $this->comision_campana = $comision_campana;
+    }
+
+    
     public function exchangeArray($data)
     {
         $this->id_campana = (isset($data['id_campana'])) ? $data['id_campana'] : null;
@@ -156,12 +193,16 @@ class Cupcampana {
         $this->id_empresa = (isset($data['id_empresa'])) ? $data['id_empresa'] : null;
         $this->id_user = (isset($data['id_user'])) ? $data['id_user'] : null;
         $this->fecha_registro = (isset($data['fecha_registro'])) ? $data['fecha_registro'] : null;
+        $this->cantidad_cupones = (isset($data['cantidad_cupones'])) ? $data['cantidad_cupones'] : null;
+        $this->tiempo_online = (isset($data['tiempo_online'])) ? $data['tiempo_online'] : null;
+        $this->tiempo_offline = (isset($data['tiempo_offline'])) ? $data['tiempo_offline'] : null;
+        $this->comision_campana = (isset($data['comision_campana'])) ? $data['comision_campana'] : null;
         
     }
- 
+    
     public function getArrayCopy()
     {
         return get_object_vars($this);
     }
-    
+
 }

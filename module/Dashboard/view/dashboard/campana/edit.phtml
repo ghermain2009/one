@@ -1,18 +1,7 @@
 <?php
 $id_campana = $this->form->get('id_campana')->getValue();
 
-$directorio = $dir_image . 
-              $sep_path .
-              ".." .
-              $sep_path .
-              ".." .
-              $sep_path .
-              "public" .
-              $sep_path .
-              "img" .
-              $sep_path .
-              $id_campana .
-              $sep_path;
+$directorio = $ruta_imagenes;
 
 if (file_exists($directorio . "small")) {
     $ficheros = scandir($directorio . "small");
@@ -136,6 +125,41 @@ $contador = -1;
             </div>
         </div>
         <div class="form-group">
+            <label for="cantidad_cupones" class="col-lg-2 control-label">Cantidad Cupones :</label>
+            <div class="col-lg-2">
+                <div class="input-group" id='cantidad_cupones'>
+                    <?php echo $this->formRow($this->form->get('cantidad_cupones')); ?>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="tiempo_online" class="col-lg-2 control-label">Tiempo Online :</label>
+            <div class="col-lg-1">
+                <div class="input-group" id='tiempo_online'>
+                    <?php echo $this->formRow($this->form->get('tiempo_online')); ?>
+                </div>
+            </div>
+            <label class="col-lg-1 control-label">Horas</label>
+        </div>
+        <div class="form-group">
+            <label for="tiempo_offline" class="col-lg-2 control-label">Tiempo Offline :</label>
+            <div class="col-lg-1">
+                <div class="input-group date" id='tiempo_offline'>
+                    <?php echo $this->formRow($this->form->get('tiempo_offline')); ?>
+                </div>
+            </div>
+            <label class="col-lg-1 control-label">Horas</label>
+        </div>
+        <div class="form-group">
+            <label for="comision_campana" class="col-lg-2 control-label">Comisión de Campaña :</label>
+            <div class="col-lg-1">
+                <div class="input-group date" id='comision_campana'>
+                    <?php echo $this->formRow($this->form->get('comision_campana')); ?>
+                </div>
+            </div>
+            <label class="col-lg-1 control-label">% (Porciento)</label>
+        </div>
+        <div class="form-group">
             <label for="categoria" class="col-lg-2 control-label">Categoría :</label>
             <div class="col-lg-8">
                 <input type="hidden" id="id_categoria" name="id_categoria" value="">
@@ -235,7 +259,8 @@ $contador = -1;
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                 <h4 class="modal-title" id="myModalLabel">Opción - Campaña</h4>
             </div>
-            <div class="modal-body" style="height:580px">
+            <div class="modal-body">
+                <div class="container-fluid">
                 <form>
                     <div class="form-group">
                         <label class="col-lg-4 control-label">Descripción:</label>
@@ -268,6 +293,7 @@ $contador = -1;
                         </div>
                     </div>
                 </form>
+                </div>
             </div>
             <div class="modal-footer">
                 <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
@@ -311,8 +337,19 @@ $contador = -1;
 foreach ($ficheros as $file) {
     if ($file == '.' || $file == '..')
         continue;
+    
+    $ruta_imagen_pro = $directorio.'small'.$sep_path.$file;
+    if (file_exists($ruta_imagen_pro)){
+        ob_start();
+        $resource_image = imagecreatefromjpeg($ruta_imagen_pro);
+        imagejpeg($resource_image);
+        $imagedata = ob_get_clean();
+        $image = 'data:image/jpeg;base64,'.base64_encode($imagedata);
+    } else {
+        $image = '';
+    }
     ?>
-                '<img src="/img/<?php echo $id_campana; ?>/small/<?php echo $file; ?>" class="file-preview-image">',
+                '<img src="<?php echo $image;?>" class="file-preview-image">',
 <?php } ?>
             ],
             initialPreviewConfig: [
@@ -332,11 +369,24 @@ foreach ($ficheros as $file) {
             overwriteInitial: true,
             initialPreview: [
 <?php
+unset($initial);
 foreach ($ficheros2 as $file) {
     if ($file == '.' || $file == '..')
         continue;
+    
+    $ruta_imagen_pro = $directorio.$sep_path.'small2'.$sep_path.$file;
+    if (file_exists($ruta_imagen_pro)){
+        ob_start();
+        $resource_image = imagecreatefromjpeg($ruta_imagen_pro);
+        imagejpeg($resource_image);
+        $imagedata = ob_get_clean();
+        $image = 'data:image/jpeg;base64,'.base64_encode($imagedata);
+    } else {
+        $image ='';
+    }
+    $initial = $image;
     ?>
-                '<img src="/img/<?php echo $id_campana; ?>/small2/<?php echo $file; ?>" class="file-preview-image">',
+                '<img src="<?php echo $image; ?>" class="file-preview-image">',
 <?php } ?>
             ],
             initialPreviewConfig: [
@@ -354,7 +404,7 @@ foreach ($ficheros2 as $file) {
 
         $('#image-file2').on('fileuploaded', function(event, file, previewId, index, reader) {
            //$('#image-file2').fileinput('clear');
-           $('#image-file2').fileinput('refresh',{overwriteInitial: true,initialPreview:['<img src="/img/<?php echo $id_campana; ?>/small2/image1.jpg" class="file-preview-image">'],initialPreviewConfig:[{caption: "image1.jpg", width: "50px", url:"../../../../campana/uploaddelete2", key:'image1.jpg'}]});
+           $('#image-file2').fileinput('refresh',{overwriteInitial: true,initialPreview:['<img src="<?php echo $initial;?>" class="file-preview-image">'],initialPreviewConfig:[{caption: "image1.jpg", width: "50px", url:"../../../../campana/uploaddelete2", key:'image1.jpg'}]});
         });
         $('#image-file2').on('filedeleted', function(event, file, previewId, index, reader) {
            $('#image-file2').fileinput('clear');

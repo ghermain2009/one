@@ -16,12 +16,23 @@ use Zend\View\Model\ViewModel;
 use ZfcDatagrid\Column;
 use Zend\Session\Container;
 use Zend\Json\Json;
+use Zend\Authentication\AuthenticationService;
     
 class MicampanaController extends AbstractActionController {
     //put your code here
     public function indexAction() {
         
-        $id_empresa = $this->params()->fromRoute("empresa", null);
+        $auth = new AuthenticationService();
+
+	if ($auth->hasIdentity()) {
+            $identity = $auth->getIdentity();
+            
+            if($identity->role_id == '3') {
+                $id_empresa = $identity->id_empresa;
+            } else {
+                $id_empresa = $this->params()->fromRoute("empresa", null);
+            }
+        }
         
         $serviceLocator = $this->getServiceLocator();
         $empresaTable = $serviceLocator->get('Dashboard\Model\GenempresaTable');
@@ -31,21 +42,30 @@ class MicampanaController extends AbstractActionController {
         
         $datosEmpresas = $empresaTable->getEmpresaAutorizadas();
         
-        $selectEmpresas = "<select id='id_empresa_sel' class='selectpicker'>";
-        foreach( $datosEmpresas as $empresa ) {
-           if( $empresa['razon_social'] != '' ) {
-                if ( empty($id_empresa) ) {
-                    $id_empresa = $empresa['id_empresa'];
-                }
+        if($identity->role_id == '3') {
+            foreach( $datosEmpresas as $empresa ) {
                 if( $id_empresa == $empresa['id_empresa'] ) {
-                    $sel = 'selected';
-                } else {
-                    $sel = '';
-                }
-                $selectEmpresas.= "<option value='".$empresa['id_empresa']."' ".$sel.">".$empresa['razon_social']."</option>";
-           }
+                    $selectEmpresas = $empresa['razon_social'];
+                    continue;
+                } 
+            }
+        } else {
+            $selectEmpresas = "<select id='id_empresa_sel' class='selectpicker'>";
+            foreach( $datosEmpresas as $empresa ) {
+               if( $empresa['razon_social'] != '' ) {
+                    if ( empty($id_empresa) ) {
+                        $id_empresa = $empresa['id_empresa'];
+                    }
+                    if( $id_empresa == $empresa['id_empresa'] ) {
+                        $sel = 'selected';
+                    } else {
+                        $sel = '';
+                    }
+                    $selectEmpresas.= "<option value='".$empresa['id_empresa']."' ".$sel.">".$empresa['razon_social']."</option>";
+               }
+            }
+            $selectEmpresas.= "</select>";
         }
-        $selectEmpresas.= "</select>";
                
         $datosEmpresa = $empresaTable->getEmpresa($id_empresa);
         $datosCuponV = $cuponTable->getCuponValidado($id_empresa,3);
@@ -75,7 +95,7 @@ class MicampanaController extends AbstractActionController {
         $id_empresa = $this->params()->fromPost("empresa", null);
         $cupon = $this->params()->fromPost("cupon", null);
         $tipo = $this->params()->fromPost("tipo", null);
-
+        
         $serviceLocator = $this->getServiceLocator();
         $cuponTable = $serviceLocator->get('Dashboard\Model\CupcuponTable');
 
@@ -101,7 +121,7 @@ class MicampanaController extends AbstractActionController {
         $grid->setDataSource($datosCuponV);
         
         $col = new Column\Select('codigo_cupon');
-        $col->setLabel('Código CupoRebueno');
+        $col->setLabel('Código Cupón');
         $col->setWidth(23);
         $col->setUserSortDisabled();
         $grid->addColumn($col);
@@ -113,26 +133,38 @@ class MicampanaController extends AbstractActionController {
         $grid->addColumn($col);
         
         $col = new Column\Select('id_campana');
-        $col->setLabel('N° Publicación');
-        $col->setWidth(23);
+        $col->setLabel('Código Campaña');
+        $col->setWidth(13);
         $col->setUserSortDisabled();
         $grid->addColumn($col);
         
         $col = new Column\Select('fecha_inicio');
         $col->setLabel('Fecha Publicación');
-        $col->setWidth(23);
+        $col->setWidth(13);
         $col->setUserSortDisabled();
         $grid->addColumn($col);
         
         $col = new Column\Select('precio_total');
-        $col->setLabel('Precio Total');
-        $col->setWidth(23);
+        $col->setLabel('Precio Rebueno');
+        $col->setWidth(13);
         $col->setUserSortDisabled();
         $grid->addColumn($col);
         
-        $col = new Column\Select('precio_total');
-        $col->setLabel('Monto Pagado');
-        $col->setWidth(23);
+        $col = new Column\Select('comision_total');
+        $col->setLabel('Comisión Rebueno');
+        $col->setWidth(13);
+        $col->setUserSortDisabled();
+        $grid->addColumn($col);
+        
+        $col = new Column\Select('total_apagar');
+        $col->setLabel('Mi Ingreso');
+        $col->setWidth(13);
+        $col->setUserSortDisabled();
+        $grid->addColumn($col);
+        
+        $col = new Column\Select('fecha_liquidacion');
+        $col->setLabel('Fecha Liquidación');
+        $col->setWidth(13);
         $col->setUserSortDisabled();
         $grid->addColumn($col);
         
@@ -171,20 +203,32 @@ class MicampanaController extends AbstractActionController {
         $grid->addColumn($col);
         
         $col = new Column\Select('fecha_liquidacion');
-        $col->setLabel('Fecha Emisión');
+        $col->setLabel('Fecha Liquidación');
         $col->setWidth(23);
         $col->setUserSortDisabled();
         $grid->addColumn($col);
         
         $col = new Column\Select('cantidad_cupones');
-        $col->setLabel('Cantidad de CupoRebuenos');
-        $col->setWidth(23);
+        $col->setLabel('Cantidad de Cupones');
+        $col->setWidth(13);
+        $col->setUserSortDisabled();
+        $grid->addColumn($col);
+        
+        $col = new Column\Select('total_importe');
+        $col->setLabel('Precio Rebueno');
+        $col->setWidth(13);
+        $col->setUserSortDisabled();
+        $grid->addColumn($col);
+        
+        $col = new Column\Select('comision');
+        $col->setLabel('Comisión Rebueno');
+        $col->setWidth(13);
         $col->setUserSortDisabled();
         $grid->addColumn($col);
         
         $col = new Column\Select('total_liquidacion');
-        $col->setLabel('Total');
-        $col->setWidth(23);
+        $col->setLabel('Mi Ingreso');
+        $col->setWidth(13);
         $col->setUserSortDisabled();
         $grid->addColumn($col);
         
@@ -207,7 +251,7 @@ class MicampanaController extends AbstractActionController {
         $grid = $serviceLocator->get('ZfcDatagrid\Datagrid');
         $grid->setUserFilterDisabled();
         $grid->setToolbarTemplate(null);
-        $grid->setDefaultItemsPerPage(9);
+        $grid->setDefaultItemsPerPage(3);
         $grid->setDataSource($datosCampana);
         
         $col = new Column\Select('descripcion');
@@ -224,6 +268,12 @@ class MicampanaController extends AbstractActionController {
         
         $col = new Column\Select('fecha_final');
         $col->setLabel('Fecha Final');
+        $col->setWidth(13);
+        $col->setUserSortDisabled();
+        $grid->addColumn($col);
+        
+        $col = new Column\Select('motivadores');
+        $col->setLabel('Cantidad Motivadores');
         $col->setWidth(13);
         $col->setUserSortDisabled();
         $grid->addColumn($col);

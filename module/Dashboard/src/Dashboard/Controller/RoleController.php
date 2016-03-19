@@ -31,10 +31,12 @@ class RoleController extends AbstractActionController
                 $data = $form->getData();
                 $roleTable = $serviceLocator->get('Dashboard\Model\RoleTable');
                 unset($data['submit']);
+                unset($data['btn-regresar']);
                 $rs = $roleTable->addRole($data);
                 
                 if ($rs) {
-                    $form = new RoleForm();
+                    //$form = new RoleForm();
+                    $this->redirect()->toRoute('dash_role_edit', array('id' => $rs));
                 }
             }
         }
@@ -136,12 +138,14 @@ class RoleController extends AbstractActionController
             if ($form->isValid()) {
                 $data = $form->getData();
                 unset($data['submit']);
+                unset($data['btn-regresar']);
                 $dataId = array('id' => $roleId);
                 $roleTable->editRole($data, $dataId);
             }
         } else {
             $roleData = $roleTable->getRole($roleId);
             foreach ($roleData as $role) {
+                $form->get('id')->setValue($role['id']);
                 $form->get('name')->setValue($role['name']);
             }
         }

@@ -33,7 +33,12 @@ class RoleTable
     
     public function addRole($data) 
     {
-        return $this->tableGateway->insert($data);
+        $sql = new Sql($this->tableGateway->getAdapter());
+        $insert = $sql->insert('role')->values($data);
+                
+        $stmt = $sql->prepareStatementForSqlObject($insert);
+        
+        return $stmt->execute()->getGeneratedValue();
     }
     
     

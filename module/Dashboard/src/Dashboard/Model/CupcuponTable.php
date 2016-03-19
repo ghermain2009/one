@@ -46,6 +46,7 @@ class CupcuponTable {
 
         $select->columns(array(
             'id_cupon',
+            'email_cliente',
             'id_campana',
             'id_campana_opcion',
             'cantidad',
@@ -125,6 +126,13 @@ class CupcuponTable {
 
             return $id_cuponera; /* Se inserto Informacion */
         }
+    }
+    
+    public function updDatosPayme($set, $where) {
+        
+        $rs = $this->tableGateway->update($set, $where);
+        
+        return $rs;
     }
 
     public function updEstadoVenta($orden, $estado) {
@@ -213,7 +221,7 @@ class CupcuponTable {
                             array())        
                     ->join('cup_campana', new
                             Expression("cup_cupon.id_campana = cup_campana.id_campana and "
-                            . "cup_campana.id_empresa = $id_empresa"),
+                            . "cup_campana.id_empresa = ".$id_empresa),
                             array())        
                     ->where(array('cup_cupon_detalle.codigo_cupon' => $cupon));
 
@@ -261,9 +269,12 @@ class CupcuponTable {
             'id_cupon',
             'cantidad' => new Expression("1"),
             'precio_total' => 'precio_unitario',
+            'comision_total' => new Expression("cup_cupon_detalle.precio_unitario - (round(((100 - ifnull(cup_campana.comision_campana,0)) * cup_cupon_detalle.precio_unitario) / 100,2))"),
+            'total_apagar' => new Expression("round(((100 - ifnull(cup_campana.comision_campana,0)) * cup_cupon_detalle.precio_unitario) / 100,2)"),
             'codigo_cupon',
             'fecha_compra' => new Expression("date_format(fecha_compra,'%d-%m-%Y')"),
-            'fecha_validacion' => new Expression("date_format(fecha_validacion,'%d-%m-%Y')")
+            'fecha_validacion' => new Expression("date_format(fecha_validacion,'%d-%m-%Y')"),
+            'fecha_liquidacion' => new Expression("date_format(CASE WHEN DAYOFWEEK(fecha_validacion) > 1 THEN ADDDATE(fecha_validacion, 20 - DAYOFWEEK(fecha_validacion)) ELSE ADDDATE(fecha_validacion, 12) END,'%d-%m-%Y')")
         ))
         ->from('cup_cupon_detalle');
         
@@ -281,12 +292,12 @@ class CupcuponTable {
                     'id_campana_opcion'
                 ))        
         ->join('cup_campana', new Expression("cup_cupon.id_campana = cup_campana.id_campana and "
-                                           . "cup_campana.id_empresa = $id_empresa"),
+                                           . "cup_campana.id_empresa = ".$id_empresa),
                 array(
                    'sobre_campana',
                    'saber' => 'observaciones',
                    'fecha_validez' => new Expression("date_format(fecha_validez,'%d-%m-%Y')"),
-                    'fecha_inicio' => new Expression("date_format(fecha_inicio,'%d-%m-%Y')")
+                   'fecha_inicio' => new Expression("date_format(fecha_inicio,'%d-%m-%Y')")
                 ))        
         ->join('cup_campana_opcion', new Expression("cup_cupon.id_campana = cup_campana_opcion.id_campana and "
                                                   . "cup_cupon.id_campana_opcion = cup_campana_opcion.id_campana_opcion"),
@@ -387,7 +398,7 @@ class CupcuponTable {
                 
         $select = $sql->select();
         $select->columns(array(
-            'cantidad_pagados' => new Expression("sum(cantidad_cupones)"),
+            'cantidad_pagados' => new Expression("sum(cup_liquidacion.cantidad_cupones)"),
             'total_pagados' => new Expression("sum(total_liquidacion)")
         ))
         ->from('cup_liquidacion')
@@ -435,12 +446,15 @@ class CupcuponTable {
 
         $select->columns(array(
             'id_cupon',
+            'transaccion' => 'id_cupon',
             'id_campana',
             'id_campana_opcion',
             'cantidad',
             'precio_total',
             'fecha_compra' => new Expression("date_format(fecha_compra,'%d-%m-%Y')"),
-            'tipo' => new Expression("case when id_estado_compra = '1' then '0' else '1' end")
+            'tipo' => new Expression("case when id_estado_compra = '1' then '0' else '1' end"),
+            'fec_operacion' => new Expression("date_format(fecha_operacion,'%d-%m-%Y')"),
+            'num_operacion' => 'observacion'
         ))
         ->from('cup_cupon')
         ->join('cup_campana', new Expression("cup_cupon.id_campana = cup_campana.id_campana"),
@@ -461,8 +475,8 @@ class CupcuponTable {
                       'descripcion_empresa' => 'descripcion',
                       'direccion' => new Expression("case when ifnull(direccion_comercial,'') = '' then direccion_facturacion else direccion_comercial end ")
                     ))
-        ->where(array('cup_cupon.id_estado_compra' => '1',
-                      'cup_cupon.id_tarjeta' => '999'));
+        ->where(new In('cup_cupon.id_estado_compra', array('1','3')))
+        ->where(array('cup_cupon.id_tarjeta' => '999'));
         
         $statement = $sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();
@@ -476,8 +490,12 @@ class CupcuponTable {
     
             $select = $sql->select();
 
-            $select->columns(array('observacion',
-                                   'fecha_compra' => new Expression("DATE_FORMAT(fecha_compra,'%d-%m-%Y')")))
+            $select->columns(array('operacion' => 'observacion',
+                                   'fecha_operacion' => new Expression("DATE_FORMAT(fecha_operacion,'%d-%m-%Y')")),
+                                   'id_campana',
+                                   'id_campana_opcion',
+                                   'cantidad'
+                            )
                     ->from('cup_cupon')
                     ->where(array('cup_cupon.id_cupon' => $id_cupon))
                     ->where(new In('cup_cupon.id_estado_compra', array('3','5','7')));
@@ -487,6 +505,50 @@ class CupcuponTable {
             $result = $stmt->execute();
             
             return ArrayUtils::iteratorToArray($result);
+    
+    }
+    
+    public function getCuponPromocion($email, $id_campana, $id_opcion) {
+    
+            $sql = new Sql($this->tableGateway->getAdapter());
+    
+            $select = $sql->select();
+
+            $select->columns(array('operacion' => 'observacion',
+                                   'fecha_operacion' => new Expression("DATE_FORMAT(fecha_operacion,'%d-%m-%Y')")),
+                                   'id_campana',
+                                   'id_campana_opcion',
+                                   'cantidad'
+                            )
+                    ->from('cup_cupon')
+                    ->where(array('cup_cupon.email_cliente' => $email,
+                                  'cup_cupon.id_campana' => $id_campana,
+                                  'cup_cupon.id_campana_opcion' => $id_opcion))
+                    ->where(new In('cup_cupon.id_estado_compra', array('3','5','7')));
+
+            $stmt = $sql->prepareStatementForSqlObject($select);
+
+            $result = $stmt->execute();
+            
+            return ArrayUtils::iteratorToArray($result);
+    
+    }
+       
+    public function getDatosOrden($id_cupon) {
+    
+            $sql = new Sql($this->tableGateway->getAdapter());
+    
+            $select = $sql->select();
+
+            $select->columns(array('id_campana', 'id_campana_opcion', 'cantidad'))
+                    ->from(array('c' => 'cup_cupon'))
+                    ->where(array('c.id_cupon' => $id_cupon));
+
+            $stmt = $sql->prepareStatementForSqlObject($select);
+
+            $results = $stmt->execute();
+            
+            return ArrayUtils::iteratorToArray($results);
     
     }
     

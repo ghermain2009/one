@@ -83,17 +83,6 @@ return array(
                     ),
                 ),
             ),
-            'dash_role' => array(
-                'type' => 'Literal',
-                'options' => array(
-                    'route' => '/dashboard/role',
-                    'defaults' => array(
-                        '__NAMESPACE__' => 'Dashboard\Controller',
-                        'controller' => 'role',
-                        'action' => 'index',
-                    ),
-                ),
-            ),
             'dash_user' => array(
                 'type' => 'Literal',
                 'options' => array(
@@ -147,6 +136,17 @@ return array(
                     ),
                 ),
             ),
+            'dash_role' => array(
+                'type' => 'Literal',
+                'options' => array(
+                    'route' => '/dashboard/role',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'role',
+                        'action' => 'index',
+                    ),
+                ),
+            ),
             'dash_role_list' => array(
                 'type' => 'Segment',
                 'options' => array(
@@ -158,17 +158,6 @@ return array(
                         '__NAMESPACE__' => 'Dashboard\Controller',
                         'controller' => 'role',
                         'action' => 'list',
-                    ),
-                ),
-            ),
-            'dash_contrato_edit' => array(
-                'type' => 'Segment',
-                'options' => array(
-                    'route' => '/dashboard/campana/editarcontrato',
-                    'defaults' => array(
-                        '__NAMESPACE__' => 'Dashboard\Controller',
-                        'controller' => 'campana',
-                        'action' => 'editarcontrato',
                     ),
                 ),
             ),
@@ -200,6 +189,283 @@ return array(
                     ),
                 ),
             ),
+            'dash_tipohospedaje' => array(
+                'type' => 'Literal',
+                'options' => array(
+                    'route' => '/dashboard/tipohospedaje',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'tipohospedaje',
+                        'action' => 'index',
+                    ),
+                ),
+            ),
+            'dash_tipohospedaje_list' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/dashboard/tipohospedaje/list/id[/:id]',
+                    'constraints' => array(
+                        'id'     => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'tipohospedaje',
+                        'action' => 'list',
+                    ),
+                ),
+            ),
+            'dash_tipohospedaje_edit' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/dashboard/tipohospedaje/edit/id[/:id]',
+                    'constraints' => array(
+                        'id'     => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'tipohospedaje',
+                        'action' => 'edit',
+                    ),
+                ),
+            ),
+            'dash_tipohospedaje_del' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/dashboard/tipohospedaje/delete/id[/:id]',
+                    'constraints' => array(
+                        'id'     => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'tipohospedaje',
+                        'action' => 'delete',
+                    ),
+                ),
+            ),
+            'dash_hospedaje' => array(
+                'type' => 'Literal',
+                'options' => array(
+                    'route' => '/dashboard/hospedaje',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'hospedaje',
+                        'action' => 'index',
+                    ),
+                ),
+            ),
+            'dash_hospedaje_list' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/dashboard/hospedaje/list/id[/:id]',
+                    'constraints' => array(
+                        'id'     => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'hospedaje',
+                        'action' => 'list',
+                    ),
+                ),
+            ),
+            'dash_hospedaje_edit' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/dashboard/hospedaje/edit/id[/:id]',
+                    'constraints' => array(
+                        'id'     => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'hospedaje',
+                        'action' => 'edit',
+                    ),
+                ),
+            ),
+            'dash_hospedaje_del' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/dashboard/hospedaje/delete/id[/:id]',
+                    'constraints' => array(
+                        'id'     => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'hospedaje',
+                        'action' => 'delete',
+                    ),
+                ),
+            ),
+            'dash_voucher' => array(
+                'type' => 'Literal',
+                'options' => array(
+                    'route' => '/dashboard/voucher',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'voucher',
+                        'action' => 'index',
+                    ),
+                ),
+            ),
+            'dash_voucher_list' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/dashboard/voucher/list/id[/:id]',
+                    'constraints' => array(
+                        'id'     => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'voucher',
+                        'action' => 'list',
+                    ),
+                ),
+            ),
+            'dash_voucher_edit' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/dashboard/voucher/edit/id[/:id]',
+                    'constraints' => array(
+                        'id'     => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'voucher',
+                        'action' => 'edit',
+                    ),
+                ),
+            ),
+            'dash_voucher_del' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/dashboard/voucher/delete/id[/:id]',
+                    'constraints' => array(
+                        'id'     => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'voucher',
+                        'action' => 'delete',
+                    ),
+                ),
+            ),
+            'dash_categoriahabitacion' => array(
+                'type' => 'Literal',
+                'options' => array(
+                    'route' => '/dashboard/categoriahabitacion',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'categoriahabitacion',
+                        'action' => 'index',
+                    ),
+                ),
+            ),
+            'dash_categoriahabitacion_list' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/dashboard/categoriahabitacion/list/id[/:id]',
+                    'constraints' => array(
+                        'id'     => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'categoriahabitacion',
+                        'action' => 'list',
+                    ),
+                ),
+            ),
+            'dash_categoriahabitacion_edit' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/dashboard/categoriahabitacion/edit/id[/:id]',
+                    'constraints' => array(
+                        'id'     => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'categoriahabitacion',
+                        'action' => 'edit',
+                    ),
+                ),
+            ),
+            'dash_categoriahabitacion_del' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/dashboard/categoriahabitacion/delete/id[/:id]',
+                    'constraints' => array(
+                        'id'     => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'categoriahabitacion',
+                        'action' => 'delete',
+                    ),
+                ),
+            ),
+            'dash_adicionales' => array(
+                'type' => 'Literal',
+                'options' => array(
+                    'route' => '/dashboard/adicionales',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'adicionales',
+                        'action' => 'index',
+                    ),
+                ),
+            ),
+            'dash_adicionales_list' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/dashboard/adicionales/list/id[/:id]',
+                    'constraints' => array(
+                        'id'     => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'adicionales',
+                        'action' => 'list',
+                    ),
+                ),
+            ),
+            'dash_adicionales_edit' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/dashboard/adicionales/edit/id[/:id]',
+                    'constraints' => array(
+                        'id'     => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'adicionales',
+                        'action' => 'edit',
+                    ),
+                ),
+            ),
+            'dash_adicionales_del' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/dashboard/adicionales/delete/id[/:id]',
+                    'constraints' => array(
+                        'id'     => '[0-9]+',
+                    ),
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'adicionales',
+                        'action' => 'delete',
+                    ),
+                ),
+            ),
+            'dash_contrato_edit' => array(
+                'type' => 'Segment',
+                'options' => array(
+                    'route' => '/dashboard/campana/editarcontrato',
+                    'defaults' => array(
+                        '__NAMESPACE__' => 'Dashboard\Controller',
+                        'controller' => 'campana',
+                        'action' => 'editarcontrato',
+                    ),
+                ),
+            ),
+            
             //campana
             'dash_campana' => array(
                 'type' => 'Segment',
@@ -307,7 +573,7 @@ return array(
             'dash_micampanacupon' => array(
                 'type' => 'Literal',
                 'options' => array(
-                    'route' => '/micampana/cupon',
+                    'route' => '/dashboard/micampana/cupon',
                     'defaults' => array(
                         '__NAMESPACE__' => 'Dashboard\Controller',
                         'controller' => 'micampana',
@@ -318,7 +584,7 @@ return array(
             'dash_detallevalidado' => array(
                 'type' => 'Segment',
                 'options' => array(
-                    'route' => '/micampana/detallevalidado[/:empresa]',
+                    'route' => '/dashboard/micampana/detallevalidado[/:empresa]',
                     'defaults' => array(
                         '__NAMESPACE__' => 'Dashboard\Controller',
                         'controller' => 'micampana',
@@ -329,7 +595,7 @@ return array(
             'dash_detalleliquidacion' => array(
                 'type' => 'Segment',
                 'options' => array(
-                    'route' => '/micampana/detalleliquidacion[/:empresa]',
+                    'route' => '/dashboard/micampana/detalleliquidacion[/:empresa]',
                     'defaults' => array(
                         '__NAMESPACE__' => 'Dashboard\Controller',
                         'controller' => 'micampana',
@@ -340,7 +606,7 @@ return array(
             'dash_historiacampanas' => array(
                 'type' => 'Segment',
                 'options' => array(
-                    'route' => '/micampana/historiacampanas[/:empresa]',
+                    'route' => '/dashboard/micampana/historiacampanas[/:empresa]',
                     'defaults' => array(
                         '__NAMESPACE__' => 'Dashboard\Controller',
                         'controller' => 'micampana',
@@ -351,7 +617,7 @@ return array(
             'dash_resumenliquidacion' => array(
                 'type' => 'Segment',
                 'options' => array(
-                    'route' => '/micampana/resumenliquidacion[/:empresa[/:liquidacion]]',
+                    'route' => '/dashboard/micampana/resumenliquidacion[/:empresa[/:liquidacion]]',
                     'defaults' => array(
                         '__NAMESPACE__' => 'Dashboard\Controller',
                         'controller' => 'micampana',
@@ -397,8 +663,14 @@ return array(
             'Dashboard\Controller\Login' => 'Dashboard\Controller\LoginController',
             'Dashboard\Controller\User' => 'Dashboard\Controller\UserController',
             'Dashboard\Controller\Role' => 'Dashboard\Controller\RoleController',
+            'Dashboard\Controller\Tipohospedaje' => 'Dashboard\Controller\TipohospedajeController',
+            'Dashboard\Controller\Adicionales' => 'Dashboard\Controller\AdicionalesController',
+            'Dashboard\Controller\Categoriahabitacion' => 'Dashboard\Controller\CategoriahabitacionController',
+            'Dashboard\Controller\Hospedaje' => 'Dashboard\Controller\HospedajeController',
+            'Dashboard\Controller\Voucher' => 'Dashboard\Controller\VoucherController',
             'Dashboard\Controller\Campana' => 'Dashboard\Controller\CampanaController',
             'Dashboard\Controller\Empresa' => 'Dashboard\Controller\EmpresaController',
+            'Dashboard\Controller\Reporte' => 'Dashboard\Controller\ReporteController',
             'Dashboard\Controller\Micampana' => 'Dashboard\Controller\MicampanaController',
             'Dashboard\Controller\Pagobancario' => 'Dashboard\Controller\PagobancarioController',
             'Dashboard\Cron\Controller\Generaliquidacion' => 'Dashboard\Cron\Controller\GeneraliquidacionController',

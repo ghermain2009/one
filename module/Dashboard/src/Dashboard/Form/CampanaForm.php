@@ -17,7 +17,7 @@ class CampanaForm extends Form
         foreach($empresas as $empresa) {
             //var_dump($empresa);
             $id = $empresa->getId_empresa();
-            $selEmpresa[$id] = $empresa->getRazon_social();
+            $selEmpresa[$id] = $empresa->getNombre_comercial();
         }
         
         
@@ -131,6 +131,34 @@ class CampanaForm extends Form
             'attributes' => array(
                 'type'  => 'text',
                 'class' => 'form-control input-sm'
+            ),
+          ));
+        $this->add(array(
+            'name' => 'cantidad_cupones',
+            'attributes' => array(
+                'type'  => 'text',
+                'class' => 'form-control input-sm',
+            ),
+          ));
+        $this->add(array(
+            'name' => 'tiempo_online',
+            'attributes' => array(
+                'type'  => 'text',
+                'class' => 'form-control input-sm',
+            ),
+          ));
+        $this->add(array(
+            'name' => 'tiempo_offline',
+            'attributes' => array(
+                'type'  => 'text',
+                'class' => 'form-control input-sm',
+            ),
+          ));
+        $this->add(array(
+            'name' => 'comision_campana',
+            'attributes' => array(
+                'type'  => 'text',
+                'class' => 'form-control input-sm',
             ),
           ));
         $this->add(array(

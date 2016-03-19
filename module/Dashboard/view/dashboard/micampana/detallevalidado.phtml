@@ -103,7 +103,10 @@
                         </div>
                     </div>
                 </div>
-                <h3><b>Cupones Válidados</b></h3>&nbsp;&nbsp;<button id="btn_regresar" class="btn btn-primary" type="button"><span class="glyphicon glyphicon-triangle-left"></span> Regresar</button>
+                <div>
+                    <div style="display: inline-block;"><h3><b>Cupones Válidados</b></h3></div>
+                    <div style="position: relative; display: inline-block; float: right; padding-right: 50px; top:15px"><button id="btn_regresar" class="btn btn-success" type="button"><span class="glyphicon glyphicon-triangle-left"></span> Regresar</button></div>
+                </div>
                 <div class="paneles">   
                     <div class="panel-group grafico" id="accordionTree" role="tablist" aria-multiselectable="true">
                         <div class="panel panel-default">
@@ -142,7 +145,6 @@
             } else {
                 $("#ocultar_valida").html('<span class="glyphicon glyphicon-collapse-up"></span> Ocultar')
             }
-            //$("#element").hide();
         });
 
         $("#ocultar_partner").click(function () {
@@ -151,17 +153,12 @@
             } else {
                 $("#ocultar_partner").html('<span class="glyphicon glyphicon-collapse-up"></span> Ocultar')
             }
-            //$("#element").hide();
         });
         
         $("td").each(function(i){
             var columna = $(this).attr("data-columnuniqueid");
-            if( columna == 'id_campana' ) {
-                var htm = "<a class='display: inline-table !important;' href='http://www.migroupon.com/admin/deals/view/1002350709' ";
-                    htm+= "data-toggle='tooltip' data-placement='right' data-original-title='Ver esta Publicación'>";
-                    htm+= $(this).html();
-                    htm+= "</a>"
-                $(this).html(htm);
+            if( columna == 'total_apagar' || columna == 'comision_total' ) {
+                $(this).attr('align','right');
             }
         });
         
