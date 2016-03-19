@@ -10,16 +10,22 @@ function crearUrl($str_cadena) {
     return $nueva_cadena;
 }
 
-$directorio = $dir_image . 
-              $sep_path .
-              ".." .
-              $sep_path .
-              ".." .
-              $sep_path .
-              "public" .
-              $sep_path .
-              "img" .
-              $sep_path;
+$maximo_cupones = 0;
+$vendidos = 0;
+foreach ($data_v as $vendidos) {
+    $maximo_cupones = $vendidos['maximo_cupones'];
+    $vendidos = $vendidos['vendidos'];
+}
+
+
+
+
+
+
+
+
+
+
 
 foreach ($data as $detalle) {
     $fecha_final = $detalle['fecha_final'];
@@ -31,18 +37,25 @@ foreach ($data as $detalle) {
             <!-- Indicators -->
             <ol class="carousel-indicators">
                 <?php
-                $ficheros = scandir($directorio . 
-                                    $detalle['id_campana'] .
-                                    $sep_path .
-                                    "small");
-                $contador = -1;
-                foreach ($ficheros as $file) {
-                    if ($file == '.' || $file == '..')
-                        continue;
-                    $contador++;
-                    ?>
-                    <li data-target="#carousel-detalle-promocion" data-slide-to="<?php echo $contador; ?>" <?php if ($contador == 0) { ?> class="active" <?php } ?>></li>
-                    <?php
+                if (file_exists($directorio.$detalle['id_campana'].$sep_path .'small')){
+                    $ficheros = scandir($directorio.$detalle['id_campana'].$sep_path .'small');
+
+
+
+
+                    $contador = -1;
+                    foreach ($ficheros as $file) {
+                        if ($file == '.' || $file == '..')
+                            continue;
+                        $contador++;
+                        ?>
+
+
+
+                        <li data-target="#carousel-detalle-promocion" data-slide-to="<?php echo $contador; ?>" <?php if ($contador == 0) { ?> class="active" <?php } ?>></li>
+                        <?php
+                    }
+
                 }
                 ?>
             </ol>
@@ -50,18 +63,39 @@ foreach ($data as $detalle) {
             <div class="carousel-inner" role="listbox">
                 <?php
                 $contador = -1;
-                foreach ($ficheros as $file) {
-                    if ($file == '.' || $file == '..')
-                        continue;
-                    $contador++;
-                    ?>
-                    <div class="item<?php if ($contador == 0) { ?>  active<?php } ?>">
-                        <div class="slider-detalle">
-                            <img src="../../img/<?php echo $detalle['id_campana']; ?>/small/<?php echo $file; ?>">
+                if(count($ficheros) > 0) {
+                    foreach ($ficheros as $file) {
+                        if ($file == '.' || $file == '..')
+                            continue;
+                        $contador++;
+
+                        $ruta_imagen_pro = $directorio.$detalle['id_campana'].$sep_path .'small'.$sep_path.$file;
+                        if (file_exists($ruta_imagen_pro)){
+                            ob_start();
+                            $resource_image = imagecreatefromjpeg($ruta_imagen_pro);
+                            imagejpeg($resource_image);
+                            $imagedata = ob_get_clean();
+                            $image = 'data:image/jpeg;base64,'.base64_encode($imagedata);
+                        } else {
+                            $image = '';
+                        }
+
+                        ?>
+
+
+
+                        <div class="item<?php if ($contador == 0) { ?>  active<?php } ?>">
+                            <div class="slider-detalle">
+                                <img src="<?php echo $image; ?>">
+                            </div>
+                            <div class="carousel-caption"></div>
+
                         </div>
-                        <div class="carousel-caption"></div>
-                    </div>
-                    <?php
+                        <?php
+                    }
+
+
+
                 }
                 ?>
             </div>
@@ -93,11 +127,37 @@ foreach ($data as $detalle) {
                     </div>
 
                     <!-- P1_Comprar -->
-                    <?php if ($total == 1) { ?>
-                        <a data-id="10699" data-opcion="1" href="../../campana/formulariopago/<?php echo base64_encode($opciones['id_campana']); ?>/<?php echo base64_encode($opciones['id_campana_opcion']); ?>" title="Comprar" class="btn btn_buy_action">Comprar</a>
-                    <?php } else { ?> 
-                        <button type="button" class="btn btn_buy_action" data-toggle="modal" data-target="#exampleModal" >Comprar</button>
-                    <?php } ?>
+                    <?php
+                        if( $maximo_cupones > 0 ) { 
+                                    $quedan = $maximo_cupones - $vendidos;
+                                    if( $quedan <= 10 ) { 
+                                        if( $quedan <= 0 ) { ?>
+                                            <button type="button" class="btn btn_buy_action disabled" data-toggle="modal" data-target="#exampleModal" >Comprar</button>
+                                  <?php } else { 
+                                            if ($total == 1) { ?>
+                                           <a data-id="10699" data-opcion="1" href="../../campana/formulariopago/<?php echo base64_encode($opciones['id_campana']); ?>/<?php echo base64_encode($opciones['id_campana_opcion']); ?>" title="Comprar" class="btn btn_buy_action">Comprar</a>
+                                       <?php } else { ?> 
+                                           <button type="button" class="btn btn_buy_action" data-toggle="modal" data-target="#exampleModal" >Comprar</button>
+                                       <?php }
+                                        }
+                                    } else {
+                                        if ($total == 1) { ?>
+                                            <a data-id="10699" data-opcion="1" href="../../campana/formulariopago/<?php echo base64_encode($opciones['id_campana']); ?>/<?php echo base64_encode($opciones['id_campana_opcion']); ?>" title="Comprar" class="btn btn_buy_action">Comprar</a>
+                                        <?php } else { ?> 
+                                            <button type="button" class="btn btn_buy_action" data-toggle="modal" data-target="#exampleModal" >Comprar</button>
+                                        <?php } 
+                                    }
+                        } else {
+                            if ($total == 1) { ?>
+
+                               <a data-id="10699" data-opcion="1" href="../../campana/formulariopago/<?php echo base64_encode($opciones['id_campana']); ?>/<?php echo base64_encode($opciones['id_campana_opcion']); ?>" title="Comprar" class="btn btn_buy_action">Comprar</a>
+                           <?php } else { ?> 
+
+                               <button type="button" class="btn btn_buy_action" data-toggle="modal" data-target="#exampleModal" >Comprar</button>
+                           <?php } 
+                        } 
+                    ?>
+
                     <ul class="discount_information">
                         <li><span>Precio Regular</span>
                             <div class="value">
@@ -143,7 +203,7 @@ foreach ($data as $detalle) {
                                     <form class="form-horizontal" role="form">
                                         <div class="form-group">
                                             <label for="message-text" class="col-lg-9 control-label"><span class="text-opcion">OPCIÓN <?php echo $cantidad;?> :</span> <b><?php echo $opciones['descripcion']; ?></b><span class="text-precio">Precio Regular : <?php echo $moneda['simbolo'];?> <?php echo $opciones['precio_regular']; ?> - Descuento : <?php echo $opciones['descuento']; ?> % - Ahorra : <?php echo $moneda['simbolo'];?> <?php echo $opciones['ahorro']; ?></span></label>
-                                            <a data-id="10699" data-opcion="1" href="../../campana/formulariopago/<?php echo base64_encode($opciones['id_campana']); ?>/<?php echo base64_encode($opciones['id_campana_opcion']); ?>" title="Comprar" class="btn btn_buy_action btn-sm"><?php echo $moneda['simbolo'];?> <?php echo $opciones['precio_especial']; ?></a>
+                                            <a data-id="10699" data-opcion="1" href="../../campana/formulariopago/<?php echo base64_encode($opciones['id_campana']); ?>/<?php echo base64_encode($opciones['id_campana_opcion']); ?>" title="Comprar" class="btn btn_buy_action_opcion btn-sm"><?php echo $moneda['simbolo'];?> <?php echo $opciones['precio_especial']; ?></a>
                                         </div>
                                     </form>
                                 </div>
@@ -183,13 +243,13 @@ foreach ($data as $detalle) {
                 <li><a href="javascript:;" class="reftab" data-tab="tabempresa"><ta class="btn btn-rebueno"><i class="glyphicon glyphicon-home"></i></ta>  La Empresa</a></li>
             </ul>
         <?php foreach ($data_e as $empresa) { ?>
-            <h2><?php echo $empresa["razon_social"]; ?></h2>
+            <h2><?php echo $empresa["nombre_comercial"]; ?></h2>
             <div class="contenedor-tabs-panel-descripcion"><p><?php echo $empresa["descripcion"]; ?></p></div>
             <div class="contenedor-tabs-panel-datos">
                 <div><b>Dirección:</b></div>
                 <div><?php echo $empresa["direccion_comercial"]; ?></div>
                 <div><b>Sitio Web:</b></div>                               
-                <div><a href="<?php echo $empresa["web_site"]; ?>" title="<?php echo $empresa["razon_social"]; ?>" target="_blank"><?php echo $empresa["web_site"]; ?></a></div>
+                <div><a href="<?php echo $empresa["web_site"]; ?>" title="<?php echo $empresa["nombre_comercial"]; ?>" target="_blank"><?php echo $empresa["web_site"]; ?></a></div>
                 <div><b>Horario:</b></div>           
                 <div><?php echo $empresa["horario"]; ?></div>
             </div>
@@ -209,9 +269,14 @@ $anterior = '';
 $ultimo   = 'uno';
 $contador = 0;
 foreach ($data_p as $dato) {
+    if ($dato['mostrar'] == 0 ) continue;
     $contador++;
     if($contador > 3) {
         $contador = 1;
+         ?>
+        </div>
+        <div class="campana-en-linea">
+        <?php
     }
     switch($contador) {
         case 1: $position = ' left';
@@ -221,11 +286,24 @@ foreach ($data_p as $dato) {
         case 3: $position = ' right';
             break;
     }
+    
+    $ruta_imagen_pro = $directorio.$dato['id_campana'].$sep_path.'small2'.$sep_path.'image1.jpg';
+    if (file_exists($ruta_imagen_pro)){
+        ob_start();
+        $resource_image = imagecreatefromjpeg($ruta_imagen_pro);
+        imagejpeg($resource_image);
+        $imagedata = ob_get_clean();
+        $image = 'data:image/jpeg;base64,'.base64_encode($imagedata);
+    } else {
+        $image = '';
+    }
+                
     if ($dato['categoria'] != $anterior) {
         ?>
         <section id="<?php echo $dato['categoria']; ?>">
             <h2 class="box_center">Otras buenas ofertas del día</h2>
             <div class="box_center"><div>
+                    <div class="campana-en-linea">
                     <?php
                 }
                 ?>
@@ -236,8 +314,18 @@ foreach ($data_p as $dato) {
                     <div class="img_container">
                         <a href="../../campana/detalle/<?php echo crearUrl($dato['subtitulo']).'--'.base64_encode($dato['id_campana']); ?>.html">
                             <span class=""></span>
-                            <img  class="lazy campana-imgreferencia-<?php echo $ultimo;?>" data-original="../../img/<?php echo $dato['id_campana']; ?>/small2/image1.jpg" src="../../img/buenisimo_placeholder.png" alt="<?php echo $dato['subtitulo']; ?>" />
+                            <img  class="lazy campana-imgreferencia-<?php echo $ultimo;?>" data-original="<?php echo $image;?>" src="../../img/buenisimo_placeholder.png" alt="<?php echo $dato['subtitulo']; ?>" />
                             <span class="campana-texto-descuento-<?php echo $ultimo;?>">-<?php echo $dato['descuento']; ?>%</span>
+                            <?php if( $dato['maximo_cupones'] > 0 ) { 
+                                    $quedan = $dato['maximo_cupones'] - $dato['vendidos'];
+                                    if( $quedan <= 10 ) { 
+                                        if( $quedan <= 0 ) { ?>
+                                    <span class="campana-quedan-agotado-<?php echo $ultimo;?>">¡Agotado!</span>
+                                        <?php } else { ?>
+                                    <span class="campana-quedan-<?php echo $ultimo;?>">Sólo quedan<br><?php echo $quedan;?> ofertas</span>
+                                        <?php }
+                                    }
+                                } ?>
                         </a>
                     </div>
                     <div class="campana-texto-detalle-<?php echo $ultimo;?>">
@@ -279,6 +367,24 @@ foreach ($data_p as $dato) {
                 if (cliente[0]) {
                     if (cliente[0].validar == '1') {
                         postfunction('/campana', 'detalle', '<?php echo base64_encode($id); ?>');
+                    }
+                }
+            }
+        });
+
+    }
+    
+    function aceptarArteCampana(contrato, campana) {
+
+        $.ajax({
+            type: "POST",
+            url: "/dashboard/empresa/aceptar-arte",
+            data: {contrato: contrato, campana: campana},
+            success: function (data) {
+                var actualizar = $.parseJSON(data);
+                if (actualizar[0]) {
+                    if (actualizar[0].respuesta == '1') {
+                        alert('Felicidades su promocion se encuentra en el area de programación lista para ser publicada en los próximos dias.');
                     }
                 }
             }
