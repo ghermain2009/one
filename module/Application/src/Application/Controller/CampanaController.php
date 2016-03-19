@@ -26,15 +26,14 @@ use Zend\Mime\Part as MimePart;
 use Zend\Mail\Transport\SmtpOptions;
 use Zend\View\Renderer\PhpRenderer;
 use Zend\View\Resolver\TemplateMapResolver;
-
 use Application\Services\Variados;
+use Zend\Soap\Client as NSoapClient;
 
 
 class CampanaController extends AbstractActionController {
 
     public function detalleAction() {
         
-        //$identificador = $this->params()->fromPost("id", null);
         $id = base64_decode($this->params()->fromRoute("id", null));
         
         $serviceLocator = $this->getServiceLocator();
@@ -45,6 +44,21 @@ class CampanaController extends AbstractActionController {
         $localhost = $config['constantes']['localhost'];
         $moneda = $config['moneda'];
         
+        $dir_image = $config['constantes']['dir_image'];
+        $sep_path =  $config['constantes']['sep_path'];
+        $dir_imagenes = $config['rutas']['dir_principal'] .
+                        $sep_path .
+                        $config['rutas']['dir_imgcampanas'];
+        
+        $ruta_int = $dir_image . 
+                    $sep_path . 
+                    ".." .
+                    $sep_path .
+                    ".." .
+                    $sep_path .
+                    $dir_imagenes .
+                    $sep_path;
+        
         $user_session = new Container('user');
         $user_session->id_campana = $id;
         $user_session->localhost = $localhost;
@@ -53,37 +67,82 @@ class CampanaController extends AbstractActionController {
         $empresaTable = $serviceLocator->get('Dashboard\Model\GenempresaTable');
         
         $data   = $campanaTable->getCampanaId($id);
+        $data_v = $campanaTable->getCampanaIdVendidos($id);
         $data_o = $campanaTable->getCampanaOpciones($id);
         $data_p = $campanaTable->getCampanasAllNotId($id);
 
         $data_e = $empresaTable->getEmpresaByCampana($id);
         
-        $pais = $config['id_pais'];
-        $capital = $config['id_capital'];
-        
-        $departamentoTable = $serviceLocator->get('Dashboard\Model\UbidepartamentoTable');
-        $departamentos = $departamentoTable->getDepartamentosxPaisFavoritos($pais);
-        
-        $provinciaTable = $serviceLocator->get('Dashboard\Model\UbiprovinciaTable');
-        $provincias = $provinciaTable->getProvinciasxDepartamento($pais, $capital);
-        
-        $this->layout()->pais = $pais;
-        $this->layout()->capital = $capital;
-        $this->layout()->departamentos = $departamentos;
-        $this->layout()->provincias = $provincias;
-        
-        $telefono_empresa = $config['empresa']['telefono'];
-        $this->layout()->telefono_empresa = $telefono_empresa;
+        $variados = new Variados($serviceLocator);
+        $variados->datosLayout($this->layout(), $config, '2');
 
         return new ViewModel(array('data' => $data,
             'data_o' => $data_o,
             'data_p' => $data_p,
             'data_e' => $data_e,
+            'data_v' => $data_v,
             'id' => $id,
             'dir_image' => $dir_image,
             'sep_path' => $sep_path,
             'moneda' => $moneda,
-            'localhost' => $localhost
+            'localhost' => $localhost,
+            'directorio' => $ruta_int,
+            ));
+    }
+    
+    public function aprobacionAction() {
+        
+        $id = base64_decode($this->params()->fromRoute("id", null));
+        
+        $serviceLocator = $this->getServiceLocator();
+
+        $config = $serviceLocator->get('Config');
+        $dir_image = $config['constantes']['dir_image'];
+        $sep_path = $config['constantes']['sep_path'];
+        $localhost = $config['constantes']['localhost'];
+        $moneda = $config['moneda'];
+        
+        $dir_imagenes = $config['rutas']['dir_principal'] .
+                        $sep_path .
+                        $config['rutas']['dir_imgcampanas'];
+        
+        $ruta_int = $dir_image . 
+                    $sep_path . 
+                    ".." .
+                    $sep_path .
+                    ".." .
+                    $sep_path .
+                    $dir_imagenes .
+                    $sep_path;
+        
+        $user_session = new Container('user');
+        $user_session->id_campana = $id;
+        $user_session->localhost = $localhost;
+
+        $campanaTable = $serviceLocator->get('Dashboard\Model\CupcampanaTable');
+        $empresaTable = $serviceLocator->get('Dashboard\Model\GenempresaTable');
+        
+        $data   = $campanaTable->getCampanaId($id);
+        $data_v = $campanaTable->getCampanaIdVendidos($id);
+        $data_o = $campanaTable->getCampanaOpciones($id);
+        $data_p = $campanaTable->getCampanasAllNotId($id);
+
+        $data_e = $empresaTable->getEmpresaByCampana($id);
+        
+        $variados = new Variados($serviceLocator);
+        $variados->datosLayout($this->layout(), $config, '2');
+
+        return new ViewModel(array('data' => $data,
+            'data_o' => $data_o,
+            'data_p' => $data_p,
+            'data_e' => $data_e,
+            'data_v' => $data_v,
+            'id' => $id,
+            'dir_image' => $dir_image,
+            'sep_path' => $sep_path,
+            'moneda' => $moneda,
+            'localhost' => $localhost,
+            'directorio' => $ruta_int,
             ));
     }
 
@@ -93,10 +152,32 @@ class CampanaController extends AbstractActionController {
         $op = base64_decode($this->params()->fromRoute("op", null));
         $fl = base64_decode($this->params()->fromRoute("fl", null));
         $em = base64_decode($this->params()->fromRoute("em", null));
+        
+        if( empty($id) ) {
+            $id = base64_decode($this->params()->fromPost("id", null));
+            $op = base64_decode($this->params()->fromPost("op", null));
+            $fl = base64_decode($this->params()->fromPost("fl", null));
+            $em = base64_decode($this->params()->fromPost("em", null));
+        }
 
         $serviceLocator = $this->getServiceLocator();
         $campanaTable = $serviceLocator->get('Dashboard\Model\CupcampanaTable');
         $config = $serviceLocator->get('config');
+        
+        $dir_image = $config['constantes']['dir_image'];
+        $sep_path =  $config['constantes']['sep_path'];
+        $dir_imagenes = $config['rutas']['dir_principal'] .
+                        $sep_path .
+                        $config['rutas']['dir_imgcampanas'];
+        
+        $ruta_int = $dir_image . 
+                    $sep_path . 
+                    ".." .
+                    $sep_path .
+                    ".." .
+                    $sep_path .
+                    $dir_imagenes .
+                    $sep_path;
         
         $moneda = $config['moneda'];
 
@@ -106,28 +187,9 @@ class CampanaController extends AbstractActionController {
 
         $user_session = new Container('user');
         
-        $pais = $config['id_pais'];
-        $capital = $config['id_capital'];
+        $variados = new Variados($serviceLocator);
+        $variados->datosLayout($this->layout(), $config, '2');
         
-        $departamentoTable = $serviceLocator->get('Dashboard\Model\UbidepartamentoTable');
-        $departamentos = $departamentoTable->getDepartamentosxPaisFavoritos($pais);
-        
-        $provinciaTable = $serviceLocator->get('Dashboard\Model\UbiprovinciaTable');
-        $provincias = $provinciaTable->getProvinciasxDepartamento($pais, $capital);
-        
-        $this->layout()->pais = $pais;
-        $this->layout()->capital = $capital;
-        $this->layout()->departamentos = $departamentos;
-        $this->layout()->provincias = $provincias;
-        
-        $telefono_empresa = $config['empresa']['telefono'];
-        $this->layout()->telefono_empresa = $telefono_empresa;
-
-        /* if ($fl == null) {
-          return new ViewModel(array('id' => $id,
-          'op' => $op,
-          'data_o' => $data_o));
-          } else { */
         return new ViewModel(array('id' => $id,
             'op' => $op,
             'fl' => $fl,
@@ -135,8 +197,28 @@ class CampanaController extends AbstractActionController {
             'data_o' => $data_o,
             'user_session' => $user_session,
             'moneda' => $moneda,
-                ));
-        //}
+            'directorio' => $ruta_int,
+            'sep_path' => $sep_path
+        ));
+    }
+    
+    public function pagopaymeAction() {
+        
+        $serviceLocator = $this->getServiceLocator();
+        
+        $config = $serviceLocator->get('Config');
+        
+        $variados = new Variados($serviceLocator);
+        $variados->datosLayout($this->layout(), $config, '2');
+           
+        $user_session = new Container('datos_payme');
+        $datos_payme = $user_session->solicitud;
+        
+        $form = new \Application\Form\EnviopaymeForm($datos_payme);
+        
+        $viewModel = new ViewModel(array('form' => $form));        
+
+        return $viewModel;
     }
 
     public function pagoAction() {
@@ -146,20 +228,128 @@ class CampanaController extends AbstractActionController {
         $serviceLocator = $this->getServiceLocator();
 
         $clienteTable = $serviceLocator->get('Dashboard\Model\CupclienteTable');
-        $clienteTable->addCliente($datos);
-
         $cuponTable = $serviceLocator->get('Dashboard\Model\CupcuponTable');
-        $idTransaccion = $cuponTable->addCupon($datos,$serviceLocator);
+        
+        $datosCupon = $cuponTable->getCuponPromocion($datos['email'], base64_decode($datos['IdCampana']), base64_decode($datos['IdOpcion']));
+        
+        if( !($datos['metodo'] == 'OFE' && count($datosCupon) > 0) ) { 
+            $clienteTable->addCliente($datos);
+            $idTransaccion = $cuponTable->addCupon($datos,$serviceLocator);
+        }
+        //$idTransaccion = 171;
+        $config = $serviceLocator->get('config');
+        $localhost = $config['constantes']['localhost'];
+        //var_dump($datos);
         
         switch($datos['metodo']) {
+            //Promocionales con costo cero
+            case 'OFE':
+                
+                if ( count($datosCupon) == 0 ) {
+                    set_time_limit(0);
+
+                    $estado = '3';
+
+                    $set = array('fecha_compra'     => date('Y-m-d H:i:s'),
+                                 'id_estado_compra' => $estado
+                                      );
+
+                    $where = array('id_cupon' => $idTransaccion);
+
+                    $setDetalle = array('id_estado_cupon' => $estado,
+                                        'fecha_cancelacion' => date('Y-m-d H:i:s'));
+
+                    $cuponTable->updCupon($set, $where);
+                    $cuponTable->updCuponDetalle($setDetalle, $where);
+
+                    $opcion_campana = $cuponTable->getDatosOrden($idTransaccion);
+
+                    if (count($opcion_campana) > 0 ) {
+
+                        $campanaopcionTable = $serviceLocator->get('Dashboard\Model\CupcampanaopcionTable');
+                        $campanaopcionTable->updCantidadVendidos($opcion_campana[0]['id_campana'], $opcion_campana[0]['id_campana_opcion'], $opcion_campana[0]['cantidad']);
+
+                        /*Enviamos el correo*/
+                        $datosCupon = $cuponTable->getCupon($idTransaccion);
+                        $variados = new Variados($serviceLocator);
+                        $variados->obtenerCuponPdf($datosCupon);
+                        /********************/
+
+                        $url = $localhost."/campana/cuponbuenaso";
+
+                        $request = new Request;
+                        $request->getHeaders()->addHeaders([
+                            'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8'
+                        ]);
+                        $request->setUri($url);
+                        $request->setMethod('POST'); 
+                        $request->getPost()->set('orden', $idTransaccion);
+                        $request->getPost()->set('estado', $estado);
+
+                        $confCurl = array(
+                            'adapter'   => 'Zend\Http\Client\Adapter\Curl',
+                            'curloptions' => array(CURLOPT_CONNECTTIMEOUT => 0)
+                        );
+
+                    } else {
+
+                        $mensaje = 'Opción no configurada.';
+
+                        //Mostramos Mensaje de error en caso la compra no sea satisfactoria
+                        $url = $localhost."/campana/errorpagopayme";
+
+                        $request = new Request;
+                        $request->getHeaders()->addHeaders([
+                            'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8'
+                        ]);
+                        $request->setUri($url);
+                        $request->setMethod('POST'); 
+                        $request->getPost()->set('orden', $idTransaccion);
+                        $request->getPost()->set('mensaje', $mensaje);
+
+                        $confCurl = array(
+                            'adapter'   => 'Zend\Http\Client\Adapter\Curl',
+                            'curloptions' => array(CURLOPT_CONNECTTIMEOUT => 0)
+                        );
+
+                    }
+                } else {
+                    
+                    $mensaje = 'Usted ya se encuentra registrado en esta promoción.';
+
+                    //Mostramos Mensaje de error en caso la compra no sea satisfactoria
+                    $url = $localhost."/campana/errorpagopayme";
+
+                    $request = new Request;
+                    $request->getHeaders()->addHeaders([
+                        'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8'
+                    ]);
+                    $request->setUri($url);
+                    $request->setMethod('POST'); 
+                    $request->getPost()->set('orden', '');
+                    $request->getPost()->set('mensaje', $mensaje);
+
+                    $confCurl = array(
+                        'adapter'   => 'Zend\Http\Client\Adapter\Curl',
+                        'curloptions' => array(CURLOPT_CONNECTTIMEOUT => 0)
+                    );
+                }
+
+                $client = new Client($url, $confCurl);
+
+                $response = $client->dispatch($request);
+
+                return $response;
+                
+            //Tarjetas Independientes
             case '001':
 
-                $config = $serviceLocator->get('config');
                 $postURL = $config["tarjetas"];
 
                 $url = $postURL[$datos['metodo']]['url'];
                 $usuario = $postURL[$datos['metodo']]['user'];
                 $password = $postURL[$datos['metodo']]['pass'];
+                
 
                 $request = new Request;
                 $request->getHeaders()->addHeaders([
@@ -181,37 +371,194 @@ class CampanaController extends AbstractActionController {
                 return $response;
                 
                 break;
-            
+            //Pasarela Payme
+            case 'PAY':
+                
+                $clientePaymeTable = $serviceLocator->get('Dashboard\Model\CupclientepaymeTable');
+                
+                $datosPayme   = $config['payme'];
+                $id_commerce = $datosPayme['id_commerce'];
+                $id_adquirer  = $datosPayme['id_adquirer'];
+                $idEntCommerce = $datosPayme['id_ent_commerce'];
+
+                $codCardHolderCommerce = $clientePaymeTable->addClientePayme($datos['email']);
+                $nombres = preg_split('/\s/',$datos['nombre']);
+                $names = $nombres[0];
+                $apellidos = preg_split('/\s/',$datos['apellido']);
+                $lastNames = $apellidos[0];
+                $mail = $datos['email'];
+                $reserved1 = '';
+                $reserved2 = '';
+                $reserved3 = '';
+                $desProducts = $datos['nameproducto'];
+                //$desProducts = substr($desProduct,0,30);
+
+                //Clave SHA-2.
+                $claveSecreta = $datosPayme['clave_wallet'];
+
+                //Codigo de Verificacion
+                $registerVerification = openssl_digest($idEntCommerce . $codCardHolderCommerce . $mail . $claveSecreta, 'sha512');
+
+                //Referencia al Servicio Web de Wallet            
+                $wsdl = $datosPayme['url_wallet'];
+
+                try {
+                    $clientWS = new NSoapClient($wsdl);
+
+                    //Creación de Arreglo para el almacenamiento y envío de parametros. 
+                    $params = array(
+                        'idEntCommerce'=>$idEntCommerce,
+                        'codCardHolderCommerce'=>$codCardHolderCommerce,
+                        'names'=>$names,
+                        'lastNames'=>$lastNames,
+                        'mail'=>$mail,
+                        'reserved1'=>$reserved1,
+                        'reserved2'=>$reserved2,
+                        'reserved3'=>$reserved3,
+                        'registerVerification'=>$registerVerification
+                    );
+
+                    //error_log(print_r($params,true));
+
+                    //Consumo del metodo RegisterCardHolder
+                    $result = $clientWS->RegisterCardHolder($params);
+                    $codAsoCardHolderWallet = $result->codAsoCardHolderWallet;
+                    
+                } catch (\SoapFault $e) {
+                    echo $e->getMessage();
+                }
+                
+                //error_log('codAsoCardHolderWallet -> '.$codAsoCardHolderWallet);
+                
+                $clientePaymeTable->updClientepayme($mail,$codAsoCardHolderWallet);
+                
+                //enviamos informacion al VPOS
+                $acquirerId = $id_adquirer;
+                $idCommerce = $id_commerce;
+                $purchaseOperationNumber = $idTransaccion;
+                $purchaseAmount = str_replace('.','',$datos['PriceTotal']);
+                //$purchaseAmount = '80';
+                $purchaseCurrencyCode = '840'; //DOLARES AMERICANOS
+                
+                $claveSecretaVpos = $datosPayme['clave_vpos'];
+			
+                $purchaseVerification = openssl_digest($acquirerId . $idCommerce . $purchaseOperationNumber . $purchaseAmount . $purchaseCurrencyCode . $claveSecretaVpos, 'sha512');     
+                
+                $datosEnvioPayme = array('url_vpos' => $datosPayme['url_vpos'],
+                                    'acquirerId' => $acquirerId,
+                                    'idCommerce' => $idCommerce,
+                                    'purchaseOperationNumber' => $purchaseOperationNumber,
+                                    'purchaseAmount' => $purchaseAmount,
+                                    'purchaseCurrencyCode' => $purchaseCurrencyCode, 
+                                    'language' => 'SP',
+                                    'shippingFirstName' => $nombres[0],
+                                    'shippingLastName' => $apellidos[0],
+                                    'shippingEmail' => $mail,
+                                    'shippingAddress' => 'N/A',
+                                    'shippingZIP' => 'N/A',
+                                    'shippingCity' => 'N/A',
+                                    'shippingState' => 'N/A',
+                                    'shippingCountry' => 'EC',
+                                    'userCommerce' => $codCardHolderCommerce,
+                                    'userCodePayme' => $codAsoCardHolderWallet,
+                                    'descriptionProducts' => $desProducts,
+                                    'programmingLanguage' => 'PHP',
+                                    'purchaseVerification' => $purchaseVerification,
+                                    'reserved1' => 'N/A'
+                                    );
+                
+                //error_log(print_r($datosEnvioPayme,true));
+
+                $user_session = new Container('datos_payme');
+                $user_session->solicitud = $datosEnvioPayme;
+                
+                return $this->redirect()->toRoute('pagopayme');
+                
+                /*$request = new Request;
+                $request->getHeaders()->addHeaders([
+                    'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8'
+                ]);
+                
+                //$postURL = $config["tarjetas"];
+                //$url_vpos = $postURL['001']['url'];
+                //$url_vpos     = $datosPayme['url_vpos'];
+                $url_vpos = 'https://www.google.com';
+                $request->setUri($url_vpos);
+                $request->setMethod('POST'); //uncomment this if the POST is used
+                
+                $request->getPost()->set('acquirerId', $acquirerId);
+                $request->getPost()->set('idCommerce', $idCommerce);
+                $request->getPost()->set('purchaseOperationNumber', $purchaseOperationNumber);
+                $request->getPost()->set('purchaseAmount', $purchaseAmount);
+                $request->getPost()->set('purchaseCurrencyCode', $purchaseCurrencyCode); 
+                $request->getPost()->set('language', 'ES');
+                $request->getPost()->set('shippingFirstName', $nombres[0]);
+                $request->getPost()->set('shippingLastName', $apellidos[0]);
+                $request->getPost()->set('shippingEmail', $mail);
+                $request->getPost()->set('shippingAddress', '');
+                $request->getPost()->set('shippingZIP', '');
+                $request->getPost()->set('shippingCity', '');
+                $request->getPost()->set('shippingState', '');
+                $request->getPost()->set('shippingCountry', '');
+                $request->getPost()->set('userCommerce', '');
+                $request->getPost()->set('userCodePayme', '');
+                $request->getPost()->set('descriptionProducts', '');
+                $request->getPost()->set('programmingLanguage', 'PHP');
+                $request->getPost()->set('reserved1', 'Prueba Reservado');
+                $request->getPost()->set('purchaseVerification', $purchaseVerification);
+                
+                $client = new Client;
+
+                $client->setAdapter("Zend\Http\Client\Adapter\Curl");
+                
+                $config = array(
+                      'curloptions' => array(
+                          CURLOPT_SSL_VERIFYPEER => 0,
+                          CURLOPT_POSTREDIR => CURL_REDIR_POST_ALL
+                      )
+                );
+                
+                $client->setOptions($config);
+
+                $response = $client->dispatch($request);
+                
+                return $response;*/
+                
+                
+                break;
+            //Pago en banco
             default :
                 
-                $config = $serviceLocator->get('config');
-                
-                $pais = $config['id_pais'];
-                $capital = $config['id_capital'];
+                $email = $datos['email'];
+                $excepcionDominios = $config['correo']['excepcion'];
+        
+                if( count($excepcionDominios) > 0) {
+                    $dominioCompleto = explode('@', $email);   
+                    $dominio = explode('.', $dominioCompleto[1]);
+                    $verifica = strtolower($dominio[0]);
 
-                $departamentoTable = $serviceLocator->get('Dashboard\Model\UbidepartamentoTable');
-                $departamentos = $departamentoTable->getDepartamentosxPaisFavoritos($pais);
+                    if (in_array($verifica, $excepcionDominios)) {
+                        $fuente = 'cuenta-gmail';
+                    } else {
+                        $fuente = 'envio-cupones';
+                    }
+                } else {
+                    $fuente = 'envio-cupones';
+                }
 
-                $provinciaTable = $serviceLocator->get('Dashboard\Model\UbiprovinciaTable');
-                $provincias = $provinciaTable->getProvinciasxDepartamento($pais, $capital);
-                
-                $telefono_empresa = $config['empresa']['telefono'];
-                
-                $activo   = $config['correo']['activo'];
-                $name     = $config['correo']['name'];
-                $host     = $config['correo']['host'];
-                $port     = $config['correo']['port'];
-                $tls      = $config['correo']['tls'];
-                $username = $config['correo']['username'];
-                $password = $config['correo']['password'];
-                $cuenta   = $config['correo']['cuenta-envio-cupones'];
+                $activo   = $config['correo'][$fuente]['activo'];
+                $name     = $config['correo'][$fuente]['name'];
+                $host     = $config['correo'][$fuente]['host'];
+                $port     = $config['correo'][$fuente]['port'];
+                $tls      = $config['correo'][$fuente]['tls'];
+                $username = $config['correo'][$fuente]['username'];
+                $password = $config['correo'][$fuente]['password'];
+                $cuenta   = $config['correo'][$fuente]['alias'];
                 $localhost = $config['constantes']['localhost'];
-                $telefono = $config['empresa']['telefono'];
+                $telefono  = $config['empresa']['telefono'];
                 
                 if( $activo == '1' ) {
 
-                    $email = $datos['email'];
-                    
                     $message = new Message();
                     $message->addTo($email)
                             ->addFrom($cuenta)
@@ -269,11 +616,8 @@ class CampanaController extends AbstractActionController {
                     $transport->send($message);
                 }
 
-                $this->layout()->pais = $pais;
-                $this->layout()->capital = $capital;
-                $this->layout()->departamentos = $departamentos;
-                $this->layout()->provincias = $provincias;
-                $this->layout()->telefono_empresa = $telefono_empresa;
+                $variados = new Variados($serviceLocator);
+                $variados->datosLayout($this->layout(), $config, '2');
 
                 return  new ViewModel(array('operacion' => $idTransaccion,
                                             'peciototal' => $datos['PriceTotal']));
@@ -289,31 +633,34 @@ class CampanaController extends AbstractActionController {
         $serviceLocator = $this->getServiceLocator();
         $campanaTable = $serviceLocator->get('Dashboard\Model\CupcampanaTable');
         $config = $serviceLocator->get('config');
+        
+        $dir_image = $config['constantes']['dir_image'];
+        $sep_path =  $config['constantes']['sep_path'];
+        $dir_imagenes = $config['rutas']['dir_principal'] .
+                        $sep_path .
+                        $config['rutas']['dir_imgcampanas'];
+        
+        $ruta_int = $dir_image . 
+                    $sep_path . 
+                    ".." .
+                    $sep_path .
+                    ".." .
+                    $sep_path .
+                    $dir_imagenes .
+                    $sep_path;
                 
         $data = $campanaTable->getCampanaCategoria($id,$op);
         
         $moneda = $config['moneda'];
         
-        $pais = $config['id_pais'];
-        $capital = $config['id_capital'];
-        
-        $departamentoTable = $serviceLocator->get('Dashboard\Model\UbidepartamentoTable');
-        $departamentos = $departamentoTable->getDepartamentosxPaisFavoritos($pais);
-        
-        $provinciaTable = $serviceLocator->get('Dashboard\Model\UbiprovinciaTable');
-        $provincias = $provinciaTable->getProvinciasxDepartamento($pais, $capital);
-        
-        $this->layout()->pais = $pais;
-        $this->layout()->capital = $capital;
-        $this->layout()->departamentos = $departamentos;
-        $this->layout()->provincias = $provincias;
-        
-        $telefono_empresa = $config['empresa']['telefono'];
-        $this->layout()->telefono_empresa = $telefono_empresa;
+        $variados = new Variados($serviceLocator);
+        $variados->datosLayout($this->layout(), $config, '2');
 
         return new ViewModel(array('data' => $data, 
                                    'subcategoria' => $op,
                                    'moneda' => $moneda,
+                                   'directorio' => $ruta_int,
+                                   'sep_path' => $sep_path,
             ));
     }
 
@@ -359,7 +706,7 @@ class CampanaController extends AbstractActionController {
             $user_session->apellido = $lnombre;
             $user_session->nombres = $fnombre.' '.$lnombre;
             $user_session->genero = $sexo;
-            $user_session->facebook = 'S';
+            $user_session->facebook['login'] = 'S';
 
             return $this->getResponse()->setContent(Json::encode($data));
         }
@@ -384,7 +731,7 @@ class CampanaController extends AbstractActionController {
                     $user_session->telefono = $data[0]['telefono'];
                     $user_session->celular = $data[0]['celular'];
                     $user_session->genero = $data[0]['id_sexo'];
-                    $user_session->facebook = 'N';
+                    $user_session->facebook['login'] = 'N';
                 } else {
                     $data[0]['validar'] = '2';
                     $user_session->getManager()->getStorage()->clear('user');
@@ -401,59 +748,111 @@ class CampanaController extends AbstractActionController {
         
         set_time_limit(0);
         
-        $orden = $datos["transaccion"];
-        $estado = $datos["estado"];
-
-        $serviceLocator = $this->getServiceLocator();
+        //error_log(print_r($datos,true));
         
-        $config = $serviceLocator->get('Config');
-        $localhost = $config['constantes']['localhost'];
-        $cuponTable = $serviceLocator->get('Dashboard\Model\CupcuponTable');
-        $opcion_campana = $cuponTable->updEstadoVenta($orden, $estado);
+        if( count($datos) > 0 ) {
+        
+            $orden = $datos["purchaseOperationNumber"];
+            $estado_pasarela = $datos["authorizationResult"];
+            $tipo_tarjeta = $datos["brand"];
+            if( !isset($datos["paymentReferenceCode"])) {
+                $numero_tarjeta = '';
+            } else {
+                $numero_tarjeta = $datos["paymentReferenceCode"];
+            }
+            $autorizacion = $datos["authorizationCode"];
+            $codigo_error = $datos["errorCode"];
+            $mensaje_error = $datos["errorMessage"];
+
+            switch($estado_pasarela) {
+                case '00' :
+                    $estado = '3';
+                    break;
+                default :
+                    $estado = '8';
+                    break;
+            }
+
+            $serviceLocator = $this->getServiceLocator();
+
+            $config = $serviceLocator->get('Config');
+            $localhost = $config['constantes']['localhost'];
+            $cuponTable = $serviceLocator->get('Dashboard\Model\CupcuponTable');
+            $opcion_campana = $cuponTable->updEstadoVenta($orden, $estado);
+
+            $set = array('estado_payme' => $estado_pasarela,  
+                         'brand_payme' => $tipo_tarjeta,
+                         'tarjeta_payme' => $numero_tarjeta,
+                         'autorizacion_payme' => $autorizacion,
+                         'error_code_payme' => $codigo_error,
+                         'error_message_payme' => $mensaje_error);
+
+            $where = array('id_cupon' => $orden);
+            $datos_payme = $cuponTable->updDatosPayme($set, $where);
+            
+        } else {
+            $estado = '9';
+            $estado_pasarela = '99';
+        }
 
         if ($estado == '3') {
+            
             $campanaopcionTable = $serviceLocator->get('Dashboard\Model\CupcampanaopcionTable');
             $campanaopcionTable->updCantidadVendidos($opcion_campana['id_campana'], $opcion_campana['id_campana_opcion'], $opcion_campana['cantidad']);
+        
+            /*Enviamos el correo*/
+            $datosCupon = $cuponTable->getCupon($orden);
+            $variados = new Variados($serviceLocator);
+            $variados->obtenerCuponPdf($datosCupon);
+            /********************/
+
+            $url = $localhost."/campana/cuponbuenaso";
+
+            $request = new Request;
+            $request->getHeaders()->addHeaders([
+                'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8'
+            ]);
+            $request->setUri($url);
+            $request->setMethod('POST'); 
+            $request->getPost()->set('orden', $orden);
+            $request->getPost()->set('estado', $estado);
+
+            $confCurl = array(
+                'adapter'   => 'Zend\Http\Client\Adapter\Curl',
+                'curloptions' => array(CURLOPT_CONNECTTIMEOUT => 0)
+            );
+            
+        } else {
+
+            switch($estado_pasarela) {
+                case '01':
+                    $mensaje = 'Operación Denegada.';
+                    break;
+                case '05':
+                    $mensaje = 'Operación Rechazada.';
+                    break;
+                case '99':
+                    $mensaje = 'Datos de la pasarela no fueron recibidos correctamente.';
+                    break;
+            }
+            //Mostramos Mensaje de error en caso la compra no sea satisfactoria
+            $url = $localhost."/campana/errorpagopayme";
+
+            $request = new Request;
+            $request->getHeaders()->addHeaders([
+                'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8'
+            ]);
+            $request->setUri($url);
+            $request->setMethod('POST'); 
+            $request->getPost()->set('orden', $orden);
+            $request->getPost()->set('mensaje', $mensaje);
+            
+            $confCurl = array(
+                'adapter'   => 'Zend\Http\Client\Adapter\Curl',
+                'curloptions' => array(CURLOPT_CONNECTTIMEOUT => 0)
+            );
+            
         }
-        
-        /*Enviamos el correo*/
-        $datosCupon = $cuponTable->getCupon($orden);
-        $variados = new Variados($serviceLocator);
-        $variados->obtenerCuponPdf($datosCupon);
-        /********************/
-
-        $url = $localhost."/campana/cuponbuenaso";
-
-        $request = new Request;
-        $request->getHeaders()->addHeaders([
-            'Content-Type' => 'application/x-www-form-urlencoded; charset=UTF-8'
-        ]);
-        $request->setUri($url);
-        $request->setMethod('POST'); 
-        $request->getPost()->set('orden', $orden);
-        $request->getPost()->set('estado', $estado);
-        
-        $confCurl = array(
-            'adapter'   => 'Zend\Http\Client\Adapter\Curl',
-            'curloptions' => array(CURLOPT_CONNECTTIMEOUT => 0)
-        );
-        
-        $pais = $config['id_pais'];
-        $capital = $config['id_capital'];
-        
-        $departamentoTable = $serviceLocator->get('Dashboard\Model\UbidepartamentoTable');
-        $departamentos = $departamentoTable->getDepartamentosxPaisFavoritos($pais);
-        
-        $provinciaTable = $serviceLocator->get('Dashboard\Model\UbiprovinciaTable');
-        $provincias = $provinciaTable->getProvinciasxDepartamento($pais, $capital);
-        
-        $this->layout()->pais = $pais;
-        $this->layout()->capital = $capital;
-        $this->layout()->departamentos = $departamentos;
-        $this->layout()->provincias = $provincias;
-        
-        $telefono_empresa = $config['empresa']['telefono'];
-        $this->layout()->telefono_empresa = $telefono_empresa;
         
         $client = new Client($url, $confCurl);
 
@@ -461,11 +860,14 @@ class CampanaController extends AbstractActionController {
 
         return $response;
     }
-
-    public function recuperarAction() {
+    
+    public function errorpagopaymeAction() {
+        
+        $datos = $this->params()->fromPost();
+        
         $serviceLocator = $this->getServiceLocator();
-        $config = $serviceLocator->get('config');
-        $telefono_empresa = $config['empresa']['telefono'];
+        
+        $config = $serviceLocator->get('Config');
         
         $pais = $config['id_pais'];
         $capital = $config['id_capital'];
@@ -481,30 +883,29 @@ class CampanaController extends AbstractActionController {
         $this->layout()->departamentos = $departamentos;
         $this->layout()->provincias = $provincias;
         
+        $telefono_empresa = $config['empresa']['telefono'];
         $this->layout()->telefono_empresa = $telefono_empresa;
+        
+        return new ViewModel(array('orden' => $datos['orden'],
+                                   'mensaje' => $datos['mensaje']));
+    }
+
+    public function recuperarAction() {
+        $serviceLocator = $this->getServiceLocator();
+        $config = $serviceLocator->get('config');
+        
+        $variados = new Variados($serviceLocator);
+        $variados->datosLayout($this->layout(), $config, '2');
+        
         return new ViewModel();
     }
 
     public function registrarAction() {
         $serviceLocator = $this->getServiceLocator();
         $config = $serviceLocator->get('config');
-        $telefono_empresa = $config['empresa']['telefono'];
         
-        $pais = $config['id_pais'];
-        $capital = $config['id_capital'];
-        
-        $departamentoTable = $serviceLocator->get('Dashboard\Model\UbidepartamentoTable');
-        $departamentos = $departamentoTable->getDepartamentosxPaisFavoritos($pais);
-        
-        $provinciaTable = $serviceLocator->get('Dashboard\Model\UbiprovinciaTable');
-        $provincias = $provinciaTable->getProvinciasxDepartamento($pais, $capital);
-        
-        $this->layout()->pais = $pais;
-        $this->layout()->capital = $capital;
-        $this->layout()->departamentos = $departamentos;
-        $this->layout()->provincias = $provincias;
-        
-        $this->layout()->telefono_empresa = $telefono_empresa;
+        $variados = new Variados($serviceLocator);
+        $variados->datosLayout($this->layout(), $config, '2');
         
         $flag = $this->params()->fromPost('id',null);
         return new ViewModel(array('flag' => $flag));
@@ -529,7 +930,7 @@ class CampanaController extends AbstractActionController {
         $user_session->telefono = $datos['telefono'];
         $user_session->celular = $datos['celular'];
         $user_session->genero = $datos['genero'];
-        $user_session->facebook = 'N';
+        $user_session->facebook['login'] = 'N';
         
         return $this->redirect()->toRoute('home');
     }
@@ -539,6 +940,22 @@ class CampanaController extends AbstractActionController {
         
         $serviceLocator = $this->getServiceLocator();
         $config = $serviceLocator->get('config');
+        
+        $dir_image = $config['constantes']['dir_image'];
+        $sep_path =  $config['constantes']['sep_path'];
+        $dir_imagenes = $config['rutas']['dir_principal'] .
+                        $sep_path .
+                        $config['rutas']['dir_imgcampanas'];
+        
+        $ruta_int = $dir_image . 
+                    $sep_path . 
+                    ".." .
+                    $sep_path .
+                    ".." .
+                    $sep_path .
+                    $dir_imagenes .
+                    $sep_path;
+        
         $cuponTable = $serviceLocator->get('Dashboard\Model\CupcuponTable');
         $datosCupon = $cuponTable->getCupon($datos["orden"]);
         $datosArray = $datosCupon[0];
@@ -562,7 +979,9 @@ class CampanaController extends AbstractActionController {
         $telefono_empresa = $config['empresa']['telefono'];
         $this->layout()->telefono_empresa = $telefono_empresa;
         
-        return new ViewModel(array('datos' => $datosArray));
+        return new ViewModel(array('datos' => $datosArray,
+                                   'directorio' => $ruta_int,
+                                   'sep_path' => $sep_path));
         
     }
 
@@ -576,15 +995,17 @@ class CampanaController extends AbstractActionController {
         $dir_image = $config['constantes']['dir_image'];
         $sep_path = $config['constantes']['sep_path'];
         
+        $dir_imagenes = $config['rutas']['dir_principal'] .
+                        $sep_path .
+                        $config['rutas']['dir_imgcampanas'];
+        
         $ruta_int = $dir_image . 
                     $sep_path . 
                     ".." .
                     $sep_path .
                     ".." .
                     $sep_path .
-                    "public" .
-                    $sep_path .
-                    "img" .
+                    $dir_imagenes .
                     $sep_path .
                     $campana .
                     $sep_path;
@@ -592,6 +1013,23 @@ class CampanaController extends AbstractActionController {
         $ruta = $ruta_int .
                 "small" .
                 $sep_path;
+        
+        $pais = $config['id_pais'];
+        $capital = $config['id_capital'];
+        
+        $departamentoTable = $serviceLocator->get('Dashboard\Model\UbidepartamentoTable');
+        $departamentos = $departamentoTable->getDepartamentosxPaisFavoritos($pais);
+        
+        $provinciaTable = $serviceLocator->get('Dashboard\Model\UbiprovinciaTable');
+        $provincias = $provinciaTable->getProvinciasxDepartamento($pais, $capital);
+        
+        $this->layout()->pais = $pais;
+        $this->layout()->capital = $capital;
+        $this->layout()->departamentos = $departamentos;
+        $this->layout()->provincias = $provincias;
+        
+        $telefono_empresa = $config['empresa']['telefono'];
+        $this->layout()->telefono_empresa = $telefono_empresa;
         
         if (!file_exists($ruta_int)) mkdir($ruta_int);
         if (!file_exists($ruta)) mkdir($ruta);
@@ -638,23 +1076,42 @@ class CampanaController extends AbstractActionController {
         $config = $serviceLocator->get('Config');
         $dir_image = $config['constantes']['dir_image'];
         $sep_path = $config['constantes']['sep_path'];
-
+        
+        $dir_imagenes = $config['rutas']['dir_principal'] .
+                        $sep_path .
+                        $config['rutas']['dir_imgcampanas'];
+        
         $ruta = $dir_image . 
                 $sep_path . 
                 ".." .
                 $sep_path .
                 ".." .
                 $sep_path .
-                "public" .
-                $sep_path .
-                "img" .
+                $dir_imagenes .
                 $sep_path .
                 $campana .
                 $sep_path .
                 "small" .
                 $sep_path .
                 $nombre_file;
-                
+        
+        $pais = $config['id_pais'];
+        $capital = $config['id_capital'];
+        
+        $departamentoTable = $serviceLocator->get('Dashboard\Model\UbidepartamentoTable');
+        $departamentos = $departamentoTable->getDepartamentosxPaisFavoritos($pais);
+        
+        $provinciaTable = $serviceLocator->get('Dashboard\Model\UbiprovinciaTable');
+        $provincias = $provinciaTable->getProvinciasxDepartamento($pais, $capital);
+        
+        $this->layout()->pais = $pais;
+        $this->layout()->capital = $capital;
+        $this->layout()->departamentos = $departamentos;
+        $this->layout()->provincias = $provincias;
+        
+        $telefono_empresa = $config['empresa']['telefono'];
+        $this->layout()->telefono_empresa = $telefono_empresa;
+
         if(unlink($ruta)) {
             $datos = array();
         } else {
@@ -675,15 +1132,17 @@ class CampanaController extends AbstractActionController {
         $dir_image = $config['constantes']['dir_image'];
         $sep_path = $config['constantes']['sep_path'];
 
+        $dir_imagenes = $config['rutas']['dir_principal'] .
+                        $sep_path .
+                        $config['rutas']['dir_imgcampanas'];
+        
         $ruta_int = $dir_image . 
                     $sep_path . 
                     ".." .
                     $sep_path .
                     ".." .
                     $sep_path .
-                    "public" .
-                    $sep_path .
-                    "img" .
+                    $dir_imagenes .
                     $sep_path .
                     $campana .
                     $sep_path;
@@ -691,6 +1150,23 @@ class CampanaController extends AbstractActionController {
         $ruta = $ruta_int .
                 "small2" .
                 $sep_path;
+        
+        $pais = $config['id_pais'];
+        $capital = $config['id_capital'];
+        
+        $departamentoTable = $serviceLocator->get('Dashboard\Model\UbidepartamentoTable');
+        $departamentos = $departamentoTable->getDepartamentosxPaisFavoritos($pais);
+        
+        $provinciaTable = $serviceLocator->get('Dashboard\Model\UbiprovinciaTable');
+        $provincias = $provinciaTable->getProvinciasxDepartamento($pais, $capital);
+        
+        $this->layout()->pais = $pais;
+        $this->layout()->capital = $capital;
+        $this->layout()->departamentos = $departamentos;
+        $this->layout()->provincias = $provincias;
+        
+        $telefono_empresa = $config['empresa']['telefono'];
+        $this->layout()->telefono_empresa = $telefono_empresa;
         
         if (!file_exists($ruta_int)) mkdir($ruta_int);
         if (!file_exists($ruta)) mkdir($ruta);
@@ -737,23 +1213,44 @@ class CampanaController extends AbstractActionController {
         $config = $serviceLocator->get('Config');
         $dir_image = $config['constantes']['dir_image'];
         $sep_path = $config['constantes']['sep_path'];
-
-        $ruta = $dir_image . 
+        
+        $dir_imagenes = $config['rutas']['dir_principal'] .
+                        $sep_path .
+                        $config['rutas']['dir_imgcampanas'];
+        
+        $ruta_int = $dir_image . 
                     $sep_path . 
                     ".." .
                     $sep_path .
                     ".." .
                     $sep_path .
-                    "public" .
-                    $sep_path .
-                    "img" .
+                    $dir_imagenes .
                     $sep_path .
                     $campana .
-                    $sep_path .
-                    "small2" .
-                    $sep_path .
-                    "image1.jpg";
+                    $sep_path;
         
+        $ruta = $ruta_int .
+                "small2" .
+                $sep_path .
+                "image1.jpg";
+        
+        $pais = $config['id_pais'];
+        $capital = $config['id_capital'];
+        
+        $departamentoTable = $serviceLocator->get('Dashboard\Model\UbidepartamentoTable');
+        $departamentos = $departamentoTable->getDepartamentosxPaisFavoritos($pais);
+        
+        $provinciaTable = $serviceLocator->get('Dashboard\Model\UbiprovinciaTable');
+        $provincias = $provinciaTable->getProvinciasxDepartamento($pais, $capital);
+        
+        $this->layout()->pais = $pais;
+        $this->layout()->capital = $capital;
+        $this->layout()->departamentos = $departamentos;
+        $this->layout()->provincias = $provincias;
+        
+        $telefono_empresa = $config['empresa']['telefono'];
+        $this->layout()->telefono_empresa = $telefono_empresa;
+
         if(unlink($ruta)) {
             $datos = array();
         } else {
@@ -773,6 +1270,20 @@ class CampanaController extends AbstractActionController {
         $config = $serviceLocator->get('Config');
         
         $dir_image = $config['constantes']['dir_image'];
+        $sep_path = $config['constantes']['sep_path'];
+        $dir_imagenes = $config['rutas']['dir_principal'] .
+                        $sep_path .
+                        $config['rutas']['dir_imgcampanas'];
+        
+        $ruta_int = $dir_image . 
+                    $sep_path . 
+                    ".." .
+                    $sep_path .
+                    ".." .
+                    $sep_path .
+                    $dir_imagenes .
+                    $sep_path;
+        
         $moneda = $config['moneda'];
 
         $campanaTable = $serviceLocator->get('Dashboard\Model\CupcampanaTable');
@@ -789,7 +1300,8 @@ class CampanaController extends AbstractActionController {
             'data_p' => $data_p,
             'data_e' => $data_e,
             'id' => $id,
-            'dir_image' => $dir_image,
+            'directorio' => $ruta_int,
+            'sep_path' => $sep_path,
             'moneda' => $moneda,
             ));
         

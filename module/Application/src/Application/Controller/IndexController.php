@@ -14,6 +14,7 @@ use Zend\View\Model\ViewModel;
 use Zend\Session\Container;
 use Zend\Stdlib\ArrayUtils;
 use Zend\Json\Json;
+use Application\Services\Variados;
 
 class IndexController extends AbstractActionController
 {
@@ -23,51 +24,47 @@ class IndexController extends AbstractActionController
         $serviceLocator = $this->getServiceLocator();
         $config = $serviceLocator->get('config');
         $en_produccion = $config['en_produccion'];
-        $telefono_empresa = $config['empresa']['telefono'];
+        $empresa_promocion = $config['empresa']['cod_empresa_promocion'];
+        
+        $dir_image = $config['constantes']['dir_image'];
+        $sep_path = $config['constantes']['sep_path'];
+        $dir_imagenes = $config['rutas']['dir_principal'] .
+                        $sep_path .
+                        $config['rutas']['dir_imgcampanas'];
+        
+        $ruta_int = $dir_image . 
+                    $sep_path . 
+                    ".." .
+                    $sep_path .
+                    ".." .
+                    $sep_path .
+                    $dir_imagenes .
+                    $sep_path;
         
         $constantes = $config['constantes'];
         $moneda = $config['moneda'];
 
         $user_session = new Container('user');
-        $user_session->facebook = array('id' => $constantes["id_facebook"],
+        
+        if( !isset($user_session->facebook)) {
+            $user_session->facebook = array('id' => $constantes["id_facebook"],
                                         've' => $constantes["ve_facebook"]);
+        }
         
-        $pais = $config['id_pais'];
-        $capital = $config['id_capital'];
-        
-        $departamentoTable = $serviceLocator->get('Dashboard\Model\UbidepartamentoTable');
-        $departamentos = $departamentoTable->getDepartamentosxPaisFavoritos($pais);
-        
-        $provinciaTable = $serviceLocator->get('Dashboard\Model\UbiprovinciaTable');
-        $provincias = $provinciaTable->getProvinciasxDepartamento($pais, $capital);
-        
-        $this->layout()->pais = $pais;
-        $this->layout()->capital = $capital;
-        $this->layout()->departamentos = $departamentos;
-        $this->layout()->provincias = $provincias;
-        $this->layout()->telefono_empresa = $telefono_empresa;
+        $variados = new Variados($serviceLocator);
+        $variados->datosLayout($this->layout(), $config, '1');
         
         $campanaTable = $serviceLocator->get('Dashboard\Model\CupcampanaTable');
-        $datos = $campanaTable->getCampanasAll();
-        
-        $data = array();
-        foreach ($datos as $dato) {
-             $data[] = $dato;
-        }
-        
-        $datosG = $campanaTable->getCampanaGrupo();
-        
-        $dataG = array();
-        foreach ($datosG as $dato) {
-             $dataG[] = $dato;
-        }
-        
-        
-        
+
+        $data = $campanaTable->getCampanasAll($empresa_promocion);
+        $dataG = $campanaTable->getCampanaGrupo();
+
         return new ViewModel(array('data' => $data, 
                                    'dataG' => $dataG,
                                    'user_session' => $user_session,
-                                   'moneda' => $moneda
+                                   'moneda' => $moneda,
+                                   'directorio' => $ruta_int,
+                                   'sep_path' => $sep_path
                                    ));
     }
     
@@ -137,6 +134,21 @@ class IndexController extends AbstractActionController
 
         return $this->getResponse()->setContent(Json::encode($datosRespuesta));
         
+    }
+    
+    public function departamentosAction()  {
+        
+        $pais   = $this->params()->fromPost("pais", null);
+        
+        $serviceLocator = $this->getServiceLocator();
+   
+        $departamentoTable = $serviceLocator->get('Dashboard\Model\UbidepartamentoTable');
+        $departamentos = $departamentoTable->getDepartamentosxPais($pais);
+        
+        $viewmodel = new ViewModel(array('departamentos' => $departamentos));
+        $viewmodel->setTerminal(true);
+        
+        return $viewmodel;
     }
     
     public function zonificacionAction()  {
