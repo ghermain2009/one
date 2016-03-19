@@ -14,6 +14,7 @@ $anterior = '';
 $contador = 0;
 $ultimo   = '';
 foreach ($data as $dato) {
+    if ($dato['mostrar'] == 0 ) continue;
     if ($dato['categoria'] != $anterior) {
         $contador = 0;
         if( $ultimo == 'uno' ) {
@@ -42,7 +43,8 @@ foreach ($data as $dato) {
                         $contador = 1;
                         $ultimo = 'dos';
                         $position = ' left';
-                         ?>
+                        ?>
+
                         </div>
                         <div class="campana-en-linea">
                         <?php
@@ -61,7 +63,8 @@ foreach ($data as $dato) {
                         $contador = 1;
                         $ultimo = 'uno';
                         $position = ' left';
-                         ?>
+                        ?>
+
                         </div>
                         <div class="campana-en-linea">
                         <?php
@@ -74,6 +77,18 @@ foreach ($data as $dato) {
                         }
                     }
                 }
+                
+                $ruta_imagen_pro = $directorio.$dato['id_campana'].$sep_path.'small2'.$sep_path.'image1.jpg';
+                if (file_exists($ruta_imagen_pro)){
+                    ob_start();
+                    $resource_image = imagecreatefromjpeg($ruta_imagen_pro);
+                    imagejpeg($resource_image);
+                    $imagedata = ob_get_clean();
+                    $image = 'data:image/jpeg;base64,'.base64_encode($imagedata);
+                } else {
+                    $image = '';
+                }
+                
                 ?>
                 <div class="campana-stilo-<?php echo $ultimo.$position;?>" data-id="<?php echo $dato['id_campana']; ?>">
                     <a href="/campana/detalle/<?php echo crearUrl($dato['subtitulo']).'--'.base64_encode($dato['id_campana']); ?>">
@@ -82,8 +97,18 @@ foreach ($data as $dato) {
                     <div class="img_container">
                         <a href="/campana/detalle/<?php echo crearUrl($dato['subtitulo']).'--'.base64_encode($dato['id_campana']); ?>">
                             <span class=""></span>
-                            <img  class="lazy campana-imgreferencia-<?php echo $ultimo;?>" data-original="../../../img/<?php echo $dato['id_campana']; ?>/small2/image1.jpg" src="../../../img/buenisimo_placeholder.png" alt="<?php echo $dato['subtitulo']; ?>" />
+                            <img  class="lazy campana-imgreferencia-<?php echo $ultimo;?>" data-original="<?php echo $image; ?>" src="../../../img/buenisimo_placeholder.png" alt="<?php echo $dato['subtitulo']; ?>" />
                             <span class="campana-texto-descuento-<?php echo $ultimo;?>">-<?php echo $dato['descuento']; ?>%</span>
+                            <?php if( $dato['maximo_cupones'] > 0 ) { 
+                                    $quedan = $dato['maximo_cupones'] - $dato['vendidos'];
+                                    if( $quedan <= 10 ) { 
+                                        if( $quedan <= 0 ) { ?>
+                                    <span class="campana-quedan-agotado-<?php echo $ultimo;?>">¡Agotado!</span>
+                                        <?php } else { ?>
+                                    <span class="campana-quedan-<?php echo $ultimo;?>">Sólo quedan<br><?php echo $quedan;?> ofertas</span>
+                                        <?php }
+                                    }
+                                } ?>
                         </a>
                     </div>
                     <div class="campana-texto-detalle-<?php echo $ultimo;?>">
