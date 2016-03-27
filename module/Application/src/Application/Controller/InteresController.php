@@ -31,11 +31,12 @@ class InteresController extends AbstractActionController {
     public function comofuncionaAction(){
         $serviceLocator = $this->getServiceLocator();
         $config = $serviceLocator->get('config');
+        $empresa = $config['empresa'];
         
         $variados = new Variados($serviceLocator);
         $variados->datosLayout($this->layout(), $config, '2');
         
-        return new ViewModel();
+        return new ViewModel(array('empresa' => $empresa));
     }
     
     public function preguntasfrecuentesAction(){
@@ -73,11 +74,12 @@ class InteresController extends AbstractActionController {
     public function politicasdeprivacidadAction(){
         $serviceLocator = $this->getServiceLocator();
         $config = $serviceLocator->get('config');
+        $empresa = $config['empresa'];
         
         $variados = new Variados($serviceLocator);
         $variados->datosLayout($this->layout(), $config, '2');
         
-        return new ViewModel();
+        return new ViewModel(array('empresa' => $empresa));
     }
     
     public function mapadesitioAction(){
@@ -85,12 +87,14 @@ class InteresController extends AbstractActionController {
         $categoriaTable = $serviceLocator->get('Dashboard\Model\GencategoriaTable');
         
         $config = $serviceLocator->get('config');
+        $empresa = $config['empresa'];
         $categorias = $categoriaTable->fetchAll();
         
         $variados = new Variados($serviceLocator);
         $variados->datosLayout($this->layout(), $config, '2');
         
-        return new ViewModel(array('categorias' => $categorias));
+        return new ViewModel(array('categorias' => $categorias,
+                                   'empresa' => $empresa));
     }
     
 }

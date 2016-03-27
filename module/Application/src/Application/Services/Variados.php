@@ -228,6 +228,8 @@ class Variados {
         $pais             = $config['id_pais'];
         $capital          = $config['id_capital'];
         $telefono_empresa = $config['empresa']['telefono'];
+        $display_empresa   = $config['empresa']['nombre'];
+        $dominio_empresa   = $config['empresa']['dominio'];
         
         $departamentoTable = $sl->get('Dashboard\Model\UbidepartamentoTable');
         $departamentos     = $departamentoTable->getDepartamentosxPaisFavoritos($pais);
@@ -238,6 +240,8 @@ class Variados {
         $layout->pais             = $pais;
         $layout->capital          = $capital;
         $layout->telefono_empresa = $telefono_empresa;
+        $layout->display_empresa = $display_empresa;
+        $layout->dominio_empresa = $dominio_empresa;
         $layout->departamentos    = $departamentos;
         $layout->provincias       = $provincias;
         if( !empty($user_session->username) && $pedir == '1' ) {
