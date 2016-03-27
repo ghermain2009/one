@@ -279,7 +279,7 @@ $user_session = new Container('user');
                             <div class="col_footer contact">
                                 <h3>De Interés</h3>
                                 <ul>
-                                    <li><a href="/interes" title="Sobre Rebueno">Sobre Rebueno</a></li>
+                                    <li><a href="/interes" title="Sobre <?php echo $display_empresa; ?>">Sobre <?php echo $display_empresa; ?></a></li>
                                     <li><a href="/interes/comofunciona">¿Cómo funciona?</a></li>
                                     <li><a href="/interes/preguntasfrecuentes" title="Preguntas frecuentes">Preguntas frecuentes</a></li>
                                     <li><a href="/interes/terminosycondiciones" title="Términos y Condiciones">Términos y Condiciones</a></li>
@@ -289,7 +289,7 @@ $user_session = new Container('user');
                                 </ul>
                             </div>
                             <div class="col_footer contact">
-                                <h3>Socios Rebueno</h3>
+                                <h3>Socios <?php echo $display_empresa; ?></h3>
                                 <ul>
                                     <li><a href="/dashboard" title="Ingresa a tu cuenta de socio">Ingresa a tu cuenta de socio</a></li>
                                 </ul>
@@ -299,11 +299,11 @@ $user_session = new Container('user');
                                 <ul>
                                     <li>
                                         <span class="btn-social-icon btn-lg btn-github"><i class="fa fa-phone"></i></span>
-                                        <div><?php echo $telefono_empresa; ?></div>
+                                        <div><span class="btn-social-icon btn-sm btn-twitter"><i class="fa fa-skype"></i></span><span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<?php echo $telefono_empresa; ?></span></div>
                                     </li>
                                     <li>
                                         <span class="btn-social-icon btn-lg btn-github"><i class="fa fa-envelope"></i></span>
-                                        <div><a href="mailto:clientes@rebueno.ec" title="clientes@rebueno.ec">clientes@rebueno.ec</a><br/><a href="mailto:socios@rebueno.ec" title="socios@rebueno.ec">socios@rebueno.ec</a></div>
+                                        <div><a href="mailto:clientes@<?php echo $dominio_empresa; ?>" title="clientes@<?php echo $dominio_empresa; ?>">clientes@<?php echo $dominio_empresa; ?></a><br/><a href="mailto:socios@<?php echo $dominio_empresa; ?>" title="socios@<?php echo $dominio_empresa; ?>">socios@<?php echo $dominio_empresa; ?></a></div>
                                     </li>
                                     <li>
                                         <span class="btn-social-icon btn-lg btn-github"><i class="fa fa-clock-o"></i></span>
