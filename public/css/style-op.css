@@ -1102,7 +1102,7 @@ h4 {
 }
 .buscar {
   display: inline-block;
-  width: calc(-200%);
+  width: calc(100% - 300px);
 }
 /*++++++++*/
 /*General*/
