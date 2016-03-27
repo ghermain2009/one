@@ -17,16 +17,6 @@ foreach ($data_v as $vendidos) {
     $vendidos = $vendidos['vendidos'];
 }
 
-
-
-
-
-
-
-
-
-
-
 foreach ($data as $detalle) {
     $fecha_final = $detalle['fecha_final'];
     ?>
@@ -39,23 +29,15 @@ foreach ($data as $detalle) {
                 <?php
                 if (file_exists($directorio.$detalle['id_campana'].$sep_path .'small')){
                     $ficheros = scandir($directorio.$detalle['id_campana'].$sep_path .'small');
-
-
-
-
                     $contador = -1;
                     foreach ($ficheros as $file) {
                         if ($file == '.' || $file == '..')
                             continue;
                         $contador++;
                         ?>
-
-
-
                         <li data-target="#carousel-detalle-promocion" data-slide-to="<?php echo $contador; ?>" <?php if ($contador == 0) { ?> class="active" <?php } ?>></li>
                         <?php
                     }
-
                 }
                 ?>
             </ol>
@@ -81,21 +63,14 @@ foreach ($data as $detalle) {
                         }
 
                         ?>
-
-
-
                         <div class="item<?php if ($contador == 0) { ?>  active<?php } ?>">
                             <div class="slider-detalle">
                                 <img src="<?php echo $image; ?>">
                             </div>
                             <div class="carousel-caption"></div>
-
                         </div>
                         <?php
                     }
-
-
-
                 }
                 ?>
             </div>
@@ -149,15 +124,12 @@ foreach ($data as $detalle) {
                                     }
                         } else {
                             if ($total == 1) { ?>
-
                                <a data-id="10699" data-opcion="1" href="../../campana/formulariopago/<?php echo base64_encode($opciones['id_campana']); ?>/<?php echo base64_encode($opciones['id_campana_opcion']); ?>" title="Comprar" class="btn btn_buy_action">Comprar</a>
                            <?php } else { ?> 
-
                                <button type="button" class="btn btn_buy_action" data-toggle="modal" data-target="#exampleModal" >Comprar</button>
                            <?php } 
                         } 
                     ?>
-
                     <ul class="discount_information">
                         <li><span>Precio Regular</span>
                             <div class="value">
