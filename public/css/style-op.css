@@ -733,6 +733,7 @@ h4 {
   position: relative;
   top: 3px;
   float: right;
+  width: 70%;
 }
 .dropdown-menu.formlogin {
   width: 250px !important;
