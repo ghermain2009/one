@@ -25,7 +25,7 @@
 	@wCarruselPrincipal:100%;
     @cBtnDegradeAlto:#ff0014;
 	@cBtnDegradeMedio:#f36b73;
-	@cBiselSecundario:#ff0014;
+	@cBiselSecundario:#000000;
 	@wTamanoImagen:50px;
 	@hTamanoImagen:54px;
 	@wTamanoImagenDoble:100px;
@@ -149,21 +149,21 @@ a:hover {
   font-family: gotham-medium, 'arial', 'sans-serif';
   font-size: 15px;
   font-weight: bold;
-  color: #ff0014;
+  color: #000000;
   padding-left: 8px;
   padding-right: 8px;
 }
 .priceBuy {
   font-family: gotham-medium, 'arial', 'sans-serif';
   font-size: 25px;
-  color: #ff0014;
+  color: #000000;
   padding-left: 8px;
   padding-right: 8px;
 }
 .price_subtotal {
   font-family: gotham-medium, 'arial', 'sans-serif';
   font-size: 14px;
-  color: #ff0014;
+  color: #000000;
   padding-left: 8px;
   padding-right: 8px;
 }
@@ -1052,7 +1052,7 @@ h4 {
   height: 35px;
   padding: 0px;
   margin: 0px;
-  background-color: #ff0014;
+  background-color: #000000;
 }
 .cabecera-menu {
   width: 100%;
@@ -1194,7 +1194,7 @@ section {
   float: right !important;
 }
 .campana-stilo-uno:hover {
-  box-shadow: 0px 0px 2px 2px #ff0014;
+  box-shadow: 0px 0px 2px 2px #000000;
 }
 .campana-quedan-uno {
   font-family: gotham-medium, 'arial', 'sans-serif';
@@ -1285,7 +1285,7 @@ section {
   font-family: gotham-medium, 'arial', 'sans-serif';
   font-size: 15px;
   font-weight: bold;
-  color: #ff0014;
+  color: #000000;
   padding-left: 8px;
   padding-right: 8px;
   padding-top: 0px;
@@ -1373,7 +1373,7 @@ section {
   float: right !important;
 }
 .campana-stilo-dos:hover {
-  box-shadow: 0px 0px 2px 2px #ff0014;
+  box-shadow: 0px 0px 2px 2px #000000;
 }
 .campana-quedan-dos {
   font-family: gotham-medium, 'arial', 'sans-serif';
@@ -1463,7 +1463,7 @@ section {
   font-family: gotham-medium, 'arial', 'sans-serif';
   font-size: 15px;
   font-weight: bold;
-  color: #ff0014;
+  color: #000000;
   padding-left: 8px;
   padding-right: 8px;
   width: 33%;
@@ -1570,7 +1570,7 @@ section {
   width: 100%;
   padding-bottom: 10px;
   display: inline-block;
-  background-color: #ff0014;
+  background-color: #000000;
 }
 .detalle-previsualiza > p {
   font-family: 'gotham-book', 'arial', 'sans-serif';
@@ -2119,7 +2119,7 @@ section {
   }
   .campana-stilo-uno:hover,
   .campana-stilo-dos:hover {
-    box-shadow: 0px 0px 2px 2px #ff0014;
+    box-shadow: 0px 0px 2px 2px #000000;
   }
   .lazy.campana-imgreferencia-uno,
   .lazy.campana-imgreferencia-dos {
@@ -2173,7 +2173,7 @@ section {
     font-family: gotham-medium, 'arial', 'sans-serif';
     font-size: 15px;
     font-weight: bold;
-    color: #ff0014;
+    color: #000000;
     padding-left: 8px;
     padding-right: 8px;
   }
