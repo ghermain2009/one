@@ -26,10 +26,10 @@
     @cBtnDegradeAlto:#ff0014;
 	@cBtnDegradeMedio:#f36b73;
 	@cBiselSecundario:#ff0014;
-	@wTamanoImagen:100px;
-	@hTamanoImagen:108px;
-	@wTamanoImagenDoble:200px;
-	@hTamanoImagenDoble:216px;
+	@wTamanoImagen:50px;
+	@hTamanoImagen:54px;
+	@wTamanoImagenDoble:100px;
+	@hTamanoImagenDoble:108px;
 	@wTamanoImagenPuntoMedio:150px;
 	@hTamanoImagenPuntoMedio:162px;
 */
@@ -1507,8 +1507,8 @@ section {
   color: black !important;
 }
 .logo-principal {
-  width: 204px;
-  height: 75px;
+  width: 200px;
+  height: 216px;
   background-image: url('../img/logo_rebueno.png');
   z-index: 8;
   padding: 0px;
@@ -1517,8 +1517,8 @@ section {
   clear: both !important;
 }
 .logo-principal-mini {
-  width: 102px;
-  height: 38px;
+  width: 100px;
+  height: 108px;
   background-image: url('../img/logo_rebueno.png');
   z-index: 9;
   padding: 0px;
