@@ -12,7 +12,7 @@
                             <div class="panel-heading rebueno" role="tab" id="headingOne">
                                 <div>
                                     <m class="panel-title">
-                                        Válidar cupones Rebueno
+                                        Válidar cupones <?php echo $empresa['nombre'];?>
                                     </m>
                                     <a data-toggle="modal" data-target="#codigo">
                                         <span class="glyphicon glyphicon-question-sign btn-vk" data-toggle="tooltip" data-placement="right" title="" data-original-title="¿Dónde encuentro el código de validación?"></span>
@@ -94,7 +94,7 @@
                                 <div class="panel-body">
                                     <div class="contPartnerProfile">
                                         <div class="info-pm" style="width: 100%;height: 190px">
-                                            <span>Para contactarte con tu Partner Manager, puedes escribir a <a href="mailto:socios@rebueno.ec">socios@rebueno.ec</a> o hacer click en </span><a id="contact-pm-opt" href="#contact-pm" data-toggle="modal" class="btn btn-large btn-success">Contactar a PM</a>
+                                            <span>Para contactarte con tu Partner Manager, puedes escribir a <a href="mailto:socios@<?php echo $empresa['dominio'];?>">socios@<?php echo $empresa['dominio'];?></a> o hacer click en </span><a id="contact-pm-opt" href="#contact-pm" data-toggle="modal" class="btn btn-large btn-success">Contactar a PM</a>
                                         </div>
                                     </div>
                                 </div>
@@ -108,7 +108,7 @@
                             <div class="panel-heading rebueno" role="tab" id="headingTwo">
                                 <div>
                                     <m class="panel-title">
-                                        Últimos CupoRebuenos validados
+                                        Últimos Cupo<?php echo $empresa['nombre'];?>s validados
                                     </m>
                                 </div>
                             </div>
@@ -119,7 +119,7 @@
                                               if( $cantidad > 0 ) { 
                                                  for($i=0; $i<$cantidad; $i++ ) { ?>
                                                     <tr>
-                                                        <td class="bttooltip" data-toggle="tooltip" data-placement="top" data-original-title="Código Rebueno"><?php echo $cupon_validado[$i]['codigo_cupon'];?></td>
+                                                        <td class="bttooltip" data-toggle="tooltip" data-placement="top" data-original-title="Código <?php echo $empresa['nombre'];?>"><?php echo $cupon_validado[$i]['codigo_cupon'];?></td>
                                                         <td class="bttooltip" data-toggle="tooltip" data-placement="top" data-original-title="Fecha de validación"><?php echo $cupon_validado[$i]['fecha_validacion'];?></td>
                                                         <td class="bttooltip">
                                                             <a href="#" data-toggle="tooltip" data-placement="right" data-original-title="Ver esta Publicación"><?php echo $cupon_validado[$i]['id_campana'];?></a>
@@ -132,7 +132,7 @@
                                               } ?>
                                     </table>
                                     <div class="moduleFooter">
-                                        <a href="/dashboard/micampana/detallevalidado/<?php echo base64_encode($id_empresa);?>">Ver listado completo de CupoRebuenos validados</a>
+                                        <a href="/dashboard/micampana/detallevalidado/<?php echo base64_encode($id_empresa);?>">Ver listado completo de Cupo<?php echo $empresa['nombre'];?>s validados</a>
                                     </div>
 
                                 </div>
@@ -214,7 +214,7 @@
                                                         <span class="number"><?php echo $historialValidados[0]['validados'];?></span>
                                                         <span class="detailSlide">
                                                             <img src="../../img/icono_cupon.png">
-                                                            <span>CupoRebuenos validados</span>
+                                                            <span>Cupo<?php echo $empresa['nombre'];?>s validados</span>
                                                         </span>
                                                     </span>
                                                 </div>
@@ -223,7 +223,7 @@
                                                         <span class="number"><?php echo $historialPagados[0]['cantidad_pagados'];?></span>
                                                         <span class="detailSlide">
                                                             <img src="../../img/icono_cupon_paid.png">
-                                                            <span>CupoRebuenos pagados</span>
+                                                            <span>Cupo<?php echo $empresa['nombre'];?>s pagados</span>
                                                         </span>
                                                     </span>
                                                 </div>

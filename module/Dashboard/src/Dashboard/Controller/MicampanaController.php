@@ -35,6 +35,8 @@ class MicampanaController extends AbstractActionController {
         }
         
         $serviceLocator = $this->getServiceLocator();
+        $config = $serviceLocator->get('config');
+        $empConfig = $config['empresa'];
         $empresaTable = $serviceLocator->get('Dashboard\Model\GenempresaTable');
         $cuponTable = $serviceLocator->get('Dashboard\Model\CupcuponTable');
         $liquidacionTable = $serviceLocator->get('Dashboard\Model\CupliquidacionTable');
@@ -79,7 +81,8 @@ class MicampanaController extends AbstractActionController {
         
         //$this->layout('layout/micampana');
         
-        return new ViewModel(array('id_empresa' => $id_empresa,
+        return new ViewModel(array('empresa' => $empConfig,
+                                   'id_empresa' => $id_empresa,
                                    'nombre_empresa' => $nombre_empresa,
                                    'cupon_validado' => $datosCuponV,
                                    'liquidaciones' => $datosLiquidacion,
