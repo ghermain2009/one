@@ -1,5 +1,6 @@
 /*Variables de color*/
 /*  Datos Sistema
+	@wCarruselPrincipal:Ancho Carrusel Principal;
 	@cBtnDegradeAlto:Degrade Boton Verde Alto  #93ba2f
 	@cBtnDegradeMedio:Degrade Boton Verde Medio #A8CF45
 	@cBiselSecundario:Color Secundario Naranja Oro #fdaf06
@@ -10,6 +11,7 @@
 	@wTamanoImagenPuntoMedio:Ancho del Logo
 	@hTamanoImagenPuntoMedio:Alto  del Logo
 	Datos Rebueno
+	@wCarruselPrincipal:74%;
 	@cBtnDegradeAlto:#93ba2f;
 	@cBtnDegradeMedio:#A8CF45;
 	@cBiselSecundario:#fdaf06;
@@ -20,6 +22,7 @@
 	@wTamanoImagenPuntoMedio:153px;
 	@hTamanoImagenPuntoMedio:57px;
 	Datos One Peru
+	@wCarruselPrincipal:100%;
     @cBtnDegradeAlto:#ff0014;
 	@cBtnDegradeMedio:#f36b73;
 	@cBiselSecundario:#ff0014;
@@ -1096,7 +1099,7 @@ h4 {
   display: inline-block;
   width: calc(-200%);
 }
-/*+++++++++/
+/*++++++++*/
 /*General*/
 section {
   display: table;
@@ -1146,7 +1149,7 @@ section {
   width: 100%;
 }
 .carousel.carrusel-principal {
-  width: 74%;
+  width: 100%;
   display: inline-block;
 }
 .carousel.carrusel-secundario {
