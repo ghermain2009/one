@@ -1150,8 +1150,6 @@ section {
 }
 /*Index*/
 .contenedor-carrusel {
-  background-image: url('../img/back_rebueno.png');
-  background-repeat: repeat-x;
   padding: 0px;
   margin: 0px;
   width: 100%;
