@@ -681,17 +681,17 @@ h4 {
 .header-top-center.logo {
   position: relative;
   top: 0px;
-  width: 100px;
-  height: 108px;
+  width: 50px;
+  height: 54px;
   background-image: url('../img/logo_rebueno.png');
   z-index: 9;
   padding: 0px;
   margin: 0px;
-  background-size: 100px 108px;
+  background-size: 50px 54px;
 }
 .logo-fijo {
-  width: 200px;
-  height: 216px;
+  width: 100px;
+  height: 108px;
   background-image: url('../img/logo_rebueno.png');
 }
 .logo-fijo-cupon {
@@ -700,8 +700,8 @@ h4 {
   background-image: url('../img/logo_rebueno_cupon.png');
 }
 .logo {
-  width: 200px;
-  height: 216px;
+  width: 100px;
+  height: 108px;
   background-image: url('../img/logo_rebueno.png');
   z-index: 8;
   padding: 0px;
@@ -710,13 +710,13 @@ h4 {
   clear: both !important;
 }
 .logo2 {
-  width: 100px;
-  height: 108px;
+  width: 50px;
+  height: 54px;
   background-image: url('../img/logo_rebueno.png');
   z-index: 9;
   padding: 0px;
   margin: 0px;
-  background-size: 100px 108px;
+  background-size: 50px 54px;
 }
 .logo3 {
   width: 150px;
@@ -1507,8 +1507,8 @@ section {
   color: black !important;
 }
 .logo-principal {
-  width: 200px;
-  height: 216px;
+  width: 100px;
+  height: 108px;
   background-image: url('../img/logo_rebueno.png');
   z-index: 8;
   padding: 0px;
@@ -1517,8 +1517,8 @@ section {
   clear: both !important;
 }
 .logo-principal-mini {
-  width: 100px;
-  height: 108px;
+  width: 50px;
+  height: 54px;
   background-image: url('../img/logo_rebueno.png');
   z-index: 9;
   padding: 0px;
