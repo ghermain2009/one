@@ -1,5 +1,6 @@
 /*Variables de color*/
 /*  Datos Sistema
+	@nIdSistema:Id Otorgado a cada Sistema;
 	@wCarruselPrincipal:Ancho Carrusel Principal;
 	@cBtnDegradeAlto:Degrade Boton Verde Alto  #93ba2f
 	@cBtnDegradeMedio:Degrade Boton Verde Medio #A8CF45
@@ -11,6 +12,7 @@
 	@wTamanoImagenPuntoMedio:Ancho del Logo
 	@hTamanoImagenPuntoMedio:Alto  del Logo
 	Datos Rebueno
+	@nIdSistema:0;
 	@wCarruselPrincipal:74%;
 	@cBtnDegradeAlto:#93ba2f;
 	@cBtnDegradeMedio:#A8CF45;
@@ -22,6 +24,7 @@
 	@wTamanoImagenPuntoMedio:153px;
 	@hTamanoImagenPuntoMedio:57px;
 	Datos One Peru
+	@nIdSistema:1;
 	@wCarruselPrincipal:100%;
     @cBtnDegradeAlto:#ff0014;
 	@cBtnDegradeMedio:#f36b73;
