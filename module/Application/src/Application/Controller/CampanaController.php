@@ -44,8 +44,6 @@ class CampanaController extends AbstractActionController {
         $localhost = $config['constantes']['localhost'];
         $moneda = $config['moneda'];
         
-        $dir_image = $config['constantes']['dir_image'];
-        $sep_path =  $config['constantes']['sep_path'];
         $dir_imagenes = $config['rutas']['dir_principal'] .
                         $sep_path .
                         $config['rutas']['dir_imgcampanas'];
@@ -69,6 +67,7 @@ class CampanaController extends AbstractActionController {
         $data   = $campanaTable->getCampanaId($id);
         $data_v = $campanaTable->getCampanaIdVendidos($id);
         $data_o = $campanaTable->getCampanaOpciones($id);
+        $data_s = $campanaTable->getCampanaSeleccionDetalle($id);
         $data_p = $campanaTable->getCampanasAllNotId($id);
 
         $data_e = $empresaTable->getEmpresaByCampana($id);
@@ -81,6 +80,7 @@ class CampanaController extends AbstractActionController {
             'data_p' => $data_p,
             'data_e' => $data_e,
             'data_v' => $data_v,
+            'data_s' => $data_s,
             'id' => $id,
             'dir_image' => $dir_image,
             'sep_path' => $sep_path,
@@ -148,16 +148,39 @@ class CampanaController extends AbstractActionController {
 
     public function formulariopagoAction() {
 
+        $user_session = new Container('user');
+        
         $id = base64_decode($this->params()->fromRoute("id", null));
         $op = base64_decode($this->params()->fromRoute("op", null));
         $fl = base64_decode($this->params()->fromRoute("fl", null));
         $em = base64_decode($this->params()->fromRoute("em", null));
+        
+        if(!empty($user_session->key_seleccion)) {
+            $key_seleccion = $user_session->key_seleccion;
+        }
         
         if( empty($id) ) {
             $id = base64_decode($this->params()->fromPost("id", null));
             $op = base64_decode($this->params()->fromPost("op", null));
             $fl = base64_decode($this->params()->fromPost("fl", null));
             $em = base64_decode($this->params()->fromPost("em", null));
+            $etiqueta_seleccion = $this->params()->fromPost("label-opcion-seleccion", null);
+            $cantidad_seleccion = $this->params()->fromPost("cantidad-opcion-seleccion", null);
+            $monto_seleccion = $this->params()->fromPost("opcion-seleccion", null);
+            $key_seleccion = $this->params()->fromPost("keyseleccion-opcion-seleccion", null);
+            
+            $user_session->etiqueta_seleccion = $etiqueta_seleccion;
+            $user_session->cantidad_seleccion = $cantidad_seleccion;
+            $user_session->monto_seleccion = $monto_seleccion;
+            $user_session->key_seleccion = $key_seleccion;
+        }
+        
+        if(!empty($key_seleccion)) {
+            foreach ($key_seleccion as $i=>$row) {
+                if (empty($row)) unset($key_seleccion[$i]);
+            }
+        } else {
+            $key_seleccion = array('0');
         }
 
         $serviceLocator = $this->getServiceLocator();
@@ -181,11 +204,11 @@ class CampanaController extends AbstractActionController {
         
         $moneda = $config['moneda'];
 
-        $data_o = $campanaTable->getCampanaOpcionId($op);
+        $data_o = $campanaTable->getCampanaOpcionId($op,$key_seleccion);
 
         $this->layout('layout/layout_pago');
 
-        $user_session = new Container('user');
+        
         
         $variados = new Variados($serviceLocator);
         $variados->datosLayout($this->layout(), $config, '2');
@@ -1308,5 +1331,11 @@ class CampanaController extends AbstractActionController {
         $viewmodel->setTerminal(true);
 
         return $viewmodel;
+    }
+    
+    public function opcionventaAction(){
+        $var = $this->params()->fromPost();
+        error_log(print_r($var,true));
+        return $this->getResponse()->setContent(Json::encode(array('hola' => '1')));
     }
 }

@@ -35,6 +35,7 @@ $user_session = new Container('user');
         <!-- Le styles -->
         <?php
         echo $this->headLink(array('rel' => 'shortcut icon', 'type' => 'image/vnd.microsoft.icon', 'href' => $this->basePath() . '/img/favicon.ico'))
+                ->prependStylesheet($this->basePath() . '/css/jquery.datetimepicker.css')
                 ->prependStylesheet($this->basePath() . '/css/formValidation.css')
                 ->prependStylesheet($this->basePath() . '/css/style.css')
                 ->prependStylesheet($this->basePath() . '/css/style-op.css')
@@ -48,6 +49,7 @@ $user_session = new Container('user');
         <!-- Scripts -->
         <?php
         echo $this->headScript()
+                ->prependFile($this->basePath() . '/js/jquery.datetimepicker.full.js')
                 ->prependFile($this->basePath() . '/js/bootstrap.min.js')
                 ->prependFile($this->basePath() . '/js/framework/bootstrap.js')
                 ->prependFile($this->basePath() . '/js/formValidation.js')

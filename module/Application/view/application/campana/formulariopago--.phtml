@@ -99,7 +99,10 @@
             <a class="btn btn-block btn-social btn-facebook" href="javascript:loginFacebook();">
                 <i class="fa fa-facebook"></i> Conectar con Facebook
                 </a>
+
+
             <hr class="special">
+
             <div class="form-group">
                 <label for="email" class="col-lg-2 control-label"><span class="required">* </span>Email:</label>
                 <div class="col-xs-7">
@@ -210,6 +213,7 @@
                 $image = '';
             }
      ?>
+
         <div class="section_payment">
             <h3>Confirma tu pedido</h3>
             <div class="box_payment">
@@ -218,33 +222,13 @@
                     <img class="img_container_pago" src="<?php echo $image; ?>">
                     <span class="confirma-detalle"><?php echo strip_tags($dato['descripcion']); ?></span>
                 </div>
-                <?php 
-                    $etiquetas = $user_session->etiqueta_seleccion;
-                    $cantidades = $user_session->cantidad_seleccion;
-                    $opciones = $user_session->monto_seleccion;
-                    if(count($etiquetas) > 0 ) { 
-                ?>
-                <div class="box_center_info">
-                    <?php foreach($etiquetas as $item => $value) { 
-                            if(empty($cantidades[$item])) {
-                                $valor = $opciones[$item];
-                            } else {
-                                $valor = $cantidades[$item];
-                            }
-                    ?>
-                    <span class="confirma-detalle"><?php echo $value. " : ".$valor; ?></span>
-                    <?php } ?>
-                </div>
-                <?php
-                    }
-                ?>
                 <div class="box_quantity">
                     <span class="quantity">
                         <input type="hidden" name="IdCampana" id="IdCampana" value="<?php echo base64_encode($id); ?>">
                         <input type="hidden" name="IdOpcion" id="IdOpcion" value="<?php echo base64_encode($op); ?>">
-                        <input type="hidden" name="PriceUnit" id="PriceUnit" value="<?php if($dato['cantidad_seleccion'] > 0) { echo $dato['total_seleccion']; } else { echo $dato['precio_especial']; } ?>">
-                        <input type="hidden" name="PriceTotal" id="PriceTotal" value="<?php if($dato['cantidad_seleccion'] > 0) { echo $dato['total_seleccion']; } else { echo $dato['precio_especial']; } ?>">
-                        <span id="lblPriceUnit" class="price_subtotal"><?php echo $moneda['simbolo'];?> <?php if($dato['cantidad_seleccion'] > 0) { echo $dato['total_seleccion']; } else { echo $dato['precio_especial']; } ?></span>
+                        <input type="hidden" name="PriceUnit" id="PriceUnit" value="<?php echo $dato['precio_especial']; ?>">
+                        <input type="hidden" name="PriceTotal" id="PriceTotal" value="<?php echo $dato['precio_especial']; ?>">
+                        <span id="lblPriceUnit" class="price_subtotal"><?php echo $moneda['simbolo'];?> <?php echo $dato['precio_especial']; ?></span>
                         <span class="form_quantity">
                             <span>Cant: </span>
                             <input class="text_cantidad" type="text" name="cantidad" id="txtQuantity" value="1" required="" data-parsley-trigger="change focusin keyup" data-parsley-min="1" data-parsley-min-message="Debe comprar un mínimo de 1" data-parsley-max="10" data-parsley-max-message="Debe comprar un máximo de 10" maxlength="3" data-parsley-type="digits" data-parsley-required-message="Ingrese una cantidad." data-parsley-errors-container=".error_quantity" <?php if( $dato['precio_especial'] == '0.00' ) { ?>readonly<?php } ?>>                </span>
@@ -254,8 +238,8 @@
                     <span class="ico_alert"></span>
                     <span class="error_quantity"></span>
                 </div>
-                <div class="subtotal"><br><b>Sub total: </b><span id="lblSubtotal" class="price_subtotal"><?php echo $moneda['simbolo'];?> <?php if($dato['cantidad_seleccion'] > 0) { echo $dato['total_seleccion']; } else { echo $dato['precio_especial']; } ?></span></div>
-                <div class="subtotal"><br><b>Total: </b><span id="lblTotal" class="price"><?php echo $moneda['simbolo'];?> <?php if($dato['cantidad_seleccion'] > 0) { echo $dato['total_seleccion']; } else { echo $dato['precio_especial']; } ?></span>
+                <div class="subtotal"><br><b>Sub total: </b><span id="lblSubtotal" class="price_subtotal"><?php echo $moneda['simbolo'];?> <?php echo $dato['precio_especial']; ?></span></div>
+                <div class="subtotal"><br><b>Total: </b><span id="lblTotal" class="price"><?php echo $moneda['simbolo'];?> <?php echo $dato['precio_especial']; ?></span>
                 </div>
             </div>
         </div>
