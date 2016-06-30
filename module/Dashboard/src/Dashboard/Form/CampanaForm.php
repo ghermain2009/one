@@ -20,21 +20,6 @@ class CampanaForm extends Form
             $selEmpresa[$id] = $empresa->getNombre_comercial();
         }
         
-        
-     
-        /*$this->id_campana = (isset($data['id_campana'])) ? $data['id_campana'] : null;
-        $this->titulo = (isset($data['titulo'])) ? $data['titulo'] : null;
-        $this->subtitulo = (isset($data['subtitulo'])) ? $data['subtitulo'] : null;
-        $this->descripcion = (isset($data['descripcion'])) ? $data['descripcion'] : null;
-        $this->fecha_inicio = (isset($data['fecha_inicio'])) ? $data['fecha_inicio'] : null;
-        $this->hora_inicio = (isset($data['hora_inicio'])) ? $data['hora_inicio'] : null;
-        $this->fecha_final = (isset($data['fecha_final'])) ? $data['fecha_final'] : null;
-        $this->hora_final = (isset($data['hora_final'])) ? $data['hora_final'] : null;
-        $this->fecha_validez = (isset($data['fecha_validez'])) ? $data['fecha_validez'] : null;
-        $this->id_empresa = (isset($data['id_empresa'])) ? $data['id_empresa'] : null;
-        $this->id_user = (isset($data['id_user'])) ? $data['id_user'] : null;
-        $this->fecha_registro */
-        
         $this->setAttributes(array('method' => 'post',
                                   'class'  => 'form-horizontal',
                                   'role'   => 'form'));
@@ -99,6 +84,7 @@ class CampanaForm extends Form
         $this->add(array(
             'name' => 'fecha_inicio',
             'attributes' => array(
+                'id'    => 'fecha_inicio',
                 'type'  => 'text',
                 'class' => 'form-control input-sm'
             ),
@@ -106,6 +92,7 @@ class CampanaForm extends Form
         $this->add(array(
             'name' => 'hora_inicio',
             'attributes' => array(
+                'id'    => 'hora_inicio',
                 'type'  => 'text',
                 'class' => 'form-control input-sm',
                 'data-format' => 'hh:mm:ss'
@@ -114,6 +101,7 @@ class CampanaForm extends Form
         $this->add(array(
             'name' => 'fecha_final',
             'attributes' => array(
+                'id'    => 'fecha_final',
                 'type'  => 'text',
                 'class' => 'form-control input-sm'
             ),
@@ -121,6 +109,7 @@ class CampanaForm extends Form
         $this->add(array(
             'name' => 'hora_final',
             'attributes' => array(
+                'id'    => 'hora_final',
                 'type'  => 'text',
                 'class' => 'form-control input-sm',
                 'data-format' => 'hh:mm:ss'
@@ -129,6 +118,7 @@ class CampanaForm extends Form
         $this->add(array(
             'name' => 'fecha_validez',
             'attributes' => array(
+                'id'    => 'fecha_validez',
                 'type'  => 'text',
                 'class' => 'form-control input-sm'
             ),

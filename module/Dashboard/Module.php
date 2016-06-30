@@ -81,6 +81,10 @@ use Dashboard\Model\ContipoobservacionTable;
 
 use Dashboard\Model\Cupclientepayme;
 use Dashboard\Model\CupclientepaymeTable;
+use Dashboard\Model\Cupopcionseleccion;
+use Dashboard\Model\CupopcionseleccionTable;
+use Dashboard\Model\Cupopcionselecciondetalle;
+use Dashboard\Model\CupopcionselecciondetalleTable;
 
 class Module implements AutoloaderProviderInterface, ConfigProviderInterface
 {
@@ -520,6 +524,30 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface
                         $rsPrototype = new ResultSet();
                         $rsPrototype->setArrayObjectPrototype(new Cupclientepayme());
                         $tableGateway = new TableGateway('cup_cliente_payme', $adapter, null, $rsPrototype);
+                        return $tableGateway;
+                    },
+                    'Dashboard\Model\CupopcionseleccionTable' => function($sl){
+                        $gateway = $sl->get('CupopcionseleccionTableGateway');
+                        $table = new CupopcionseleccionTable($gateway);
+                        return $table;
+                    },
+                    'CupopcionseleccionTableGateway' => function($sl) {
+                        $adapter = $sl->get('Zend\Db\Adapter\Adapter');
+                        $rsPrototype = new ResultSet();
+                        $rsPrototype->setArrayObjectPrototype(new Cupopcionseleccion());
+                        $tableGateway = new TableGateway('cup_opcion_seleccion', $adapter, null, $rsPrototype);
+                        return $tableGateway;
+                    },
+                    'Dashboard\Model\CupopcionselecciondetalleTable' => function($sl){
+                        $gateway = $sl->get('CupopcionselecciondetalleTableGateway');
+                        $table = new CupopcionselecciondetalleTable($gateway);
+                        return $table;
+                    },
+                    'CupopcionselecciondetalleTableGateway' => function($sl) {
+                        $adapter = $sl->get('Zend\Db\Adapter\Adapter');
+                        $rsPrototype = new ResultSet();
+                        $rsPrototype->setArrayObjectPrototype(new Cupopcionselecciondetalle());
+                        $tableGateway = new TableGateway('cup_opcion_seleccion_detalle', $adapter, null, $rsPrototype);
                         return $tableGateway;
                     },
                 )

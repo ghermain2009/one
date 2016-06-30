@@ -70,7 +70,23 @@ class CupcampanaopcionTable {
                     'comision'
                 ))
                 ->from('cup_campana_opcion')
-                ->where(array('id_campana' => $id_campana));
+                ->join('cup_opcion_seleccion', new Expression("cup_campana_opcion.id_campana_opcion = cup_opcion_seleccion.id_campana_opcion and cup_campana_opcion.id_campana = cup_opcion_seleccion.id_campana"),
+                array('descripcion_primaria',
+                      'id_opcion_seleccion',
+                      'tipo_seleccion',
+                      'dias_bloqueo',
+                      'descripcion_secundaria',
+                      'valor_inicial',
+                      'valor_final', 
+                      'incremento',
+                      'utiliza_descripcion_precio',
+                      'importe_seleccion',
+                      'descripcion_interna'),'left')
+                ->join('cup_opcion_seleccion_detalle', new Expression("cup_opcion_seleccion.id_opcion_seleccion = cup_opcion_seleccion_detalle.id_opcion_seleccion"),
+                array('id_opcion_seleccion_detalle',
+                      'cantidad_seleccion',
+                      'importe_seleccion'),'left')
+                ->where(array('cup_campana_opcion.id_campana' => $id_campana));
 
         $statement = $sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();

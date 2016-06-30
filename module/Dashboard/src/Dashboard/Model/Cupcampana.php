@@ -103,7 +103,7 @@ class Cupcampana {
     function getComision_campana() {
         return $this->comision_campana;
     }
-
+    
     function setId_campana($id_campana) {
         $this->id_campana = $id_campana;
     }

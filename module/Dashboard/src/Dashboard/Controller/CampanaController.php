@@ -3,6 +3,7 @@
 namespace Dashboard\Controller;
 
 use Dashboard\Form\CampanaForm;
+use Dashboard\Form\CampanaseleccionopcionForm;
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\View\Model\ViewModel;
 use ZfcDatagrid\Column;
@@ -127,9 +128,10 @@ class CampanaController extends AbstractActionController {
         $serviceLocator = $this->getServiceLocator();
 
         $config = $serviceLocator->get('Config');
+        $simbolo_moneda = $config['moneda']['simbolo'];
         $dir_image = $config['constantes']['dir_image'];
         $sep_path = $config['constantes']['sep_path'];
-        
+
         $dir_imagenes = $config['rutas']['dir_principal'] .
                         $sep_path .
                         $config['rutas']['dir_imgcampanas'];
@@ -152,7 +154,8 @@ class CampanaController extends AbstractActionController {
 
         $request = $this->getRequest();
         $viewmodel = new ViewModel(array('dir_image' => $dir_image,
-                                         'sep_path' => $sep_path));
+                                         'sep_path' => $sep_path,
+                                         'simbolo_moneda' => $simbolo_moneda));
         $sl = $this->getServiceLocator();
         $empresaTable = $sl->get('Dashboard\Model\GenempresaTable');
         $campanaTable = $sl->get('Dashboard\Model\CupcampanaTable');
@@ -257,8 +260,10 @@ class CampanaController extends AbstractActionController {
 
 
         $serviceLocator = $this->getServiceLocator();
+        $campanaSeleccionTable = $serviceLocator->get('Dashboard\Model\CupopcionseleccionTable');
         $campanaOpcionTable = $serviceLocator->get('Dashboard\Model\CupcampanaopcionTable');
 
+        $campanaSeleccionTable->delSeleccionxOpcionxCampanaId($opcion, $campana);
         $campanaOpcionTable->delOpcionxCampanaId($opcion, $campana);
 
         return $this->getResponse()->setContent(Json::encode(array('data' => '1')));
@@ -288,6 +293,189 @@ class CampanaController extends AbstractActionController {
 
 
         return $this->getResponse()->setContent(Json::encode($datos));
+    }
+    
+    
+    public function grabarseleccionAction() {
+
+        $id_opcion_seleccion = $this->params()->fromPost("pks_opcion_seleccion", null);
+        $id_campana_opcion = $this->params()->fromPost("pks_campana_opcion", null);
+        $id_campana = $this->params()->fromPost("pks_campana", null);
+        $tipo_seleccion = $this->params()->fromPost("tipo_seleccion", null);
+        $descripcion_primaria = $this->params()->fromPost("descripcion_primaria", null);
+        $descripcion_secundaria = $this->params()->fromPost("descripcion_secundaria", null);
+        $dias_bloqueo = $this->params()->fromPost("dias_bloqueo", null);
+        $valor_inicial = $this->params()->fromPost("valor_inicial", null);
+        $valor_final = $this->params()->fromPost("valor_final", null);
+        $incremento = $this->params()->fromPost("incremento", null);
+        $importe_seleccion = $this->params()->fromPost("importe_seleccion", null);
+        $descripcion_interna = $this->params()->fromPost("descripcion_interna", null);
+        $utiliza_descripcion_precio = $this->params()->fromPost("utiliza_descripcion_precio", null);
+        $cantidad_seleccionar = $this->params()->fromPost("cantidad_seleccionar", null);
+        $opcion_seleccionar = $this->params()->fromPost("opcion_seleccionar", null);
+        
+        $data = array(  'id_opcion_seleccion' => $id_opcion_seleccion,
+                        'id_campana_opcion' => $id_campana_opcion,
+                        'id_campana' => $id_campana,
+                        'tipo_seleccion' => $tipo_seleccion,
+                        'descripcion_primaria' => $descripcion_primaria,
+                        'descripcion_secundaria' => $descripcion_secundaria,
+                        'dias_bloqueo' => $dias_bloqueo,
+                        'valor_inicial' => $valor_inicial,
+                        'valor_final' => $valor_final,
+                        'incremento' => $incremento,
+                        'importe_seleccion' => $importe_seleccion,
+                        'descripcion_interna' => $descripcion_interna,
+                        'utiliza_descripcion_precio' => $utiliza_descripcion_precio
+        );
+
+        $serviceLocator = $this->getServiceLocator();
+        
+        $config = $serviceLocator->get('Config');
+        $simbolo_moneda = $config['moneda']['simbolo'];
+        $campanaSeleccionTable = $serviceLocator->get('Dashboard\Model\CupopcionseleccionTable');
+        $campanaSeleccionDetalleTable = $serviceLocator->get('Dashboard\Model\CupopcionselecciondetalleTable');
+        
+        $datos = $campanaSeleccionTable->addSeleccionxOpcion($data);
+        if(empty($id_opcion_seleccion)) $id_opcion_seleccion = $datos['id'];
+        $t_opcion_seleccion_det = "<td>";
+        $t_opcion_seleccion_det.= "<div class='form-group'>";
+        $t_opcion_seleccion_det.= "<label for='categoria' class='col-lg-5 control-label'><b>".$descripcion_primaria."</b> ".$descripcion_secundaria." :</label>";
+        $t_opcion_seleccion_det.= "<div class='col-lg-5'>";
+        switch ($tipo_seleccion) {
+            case '1':
+                if(!empty($id_opcion_seleccion)) $campanaSeleccionDetalleTable->delSeleccionOpcionDetalleId($id_opcion_seleccion);
+                
+                
+                $t_opcion_seleccion_det.= "<select id='' class='form-control input-sm'>";
+                $cantidad = 0;
+                foreach( $opcion_seleccionar as $item => $value) {
+                    $cantidad_item = $cantidad_seleccionar[$item];
+                    $datos_item = array('id_opcion_seleccion_detalle' => '' ,
+                                        'id_opcion_seleccion' => $id_opcion_seleccion,
+                                        'cantidad_seleccion' => $cantidad_item,
+                                        'importe_seleccion' => $value);
+                    
+                    $campanaSeleccionDetalleTable->addSeleccionOpcionDetalle($datos_item);
+                    
+                    if($cantidad == 0 && $cantidad_item == 1 ) {
+                        $t_opcion_seleccion_det.= "<option value='-1'>Seleccionar</option>";
+                    }
+                    if($cantidad == 0 && $cantidad_item == 0 ) {
+                        $t_opcion_seleccion_det.= "<option value='0'>0</option>";
+                    } else {
+                        $t_opcion_seleccion_det.= "<option value='".$cantidad_item."'>";
+                        if($utiliza_descripcion_precio == '1') {
+                            $t_opcion_seleccion_det.= $cantidad_item." x ".$simbolo_moneda." ".$value;
+                        } else {
+                            $t_opcion_seleccion_det.= $cantidad_item." ".$descripcion_interna." ( x ".$simbolo_moneda." ".$value." )";
+                        }
+                        $t_opcion_seleccion_det.= "</option>";
+                    }
+                    $cantidad++;
+                }
+                $t_opcion_seleccion_det.= "</select>";
+                 
+                break;
+            case '2':
+                $t_opcion_seleccion_det.= "<input id='calendargroup' class='form-control input-sm' value='dd/mm/yyyy + ".$dias_bloqueo." días' readonly>";
+                break;
+        }
+        
+        $t_opcion_seleccion_det.= "</div>";
+        $t_opcion_seleccion_det.= "</div>";
+        $t_opcion_seleccion_det.= "</td>";
+        $t_opcion_seleccion_det.= "<td><div class='btn btn-primary' id-opcion-seleccion-editar='".$id_opcion_seleccion."'  title='Modificar selección'><span class='glyphicon glyphicon-edit'></span></div>";
+        $t_opcion_seleccion_det.= "<div class='btn btn-default' id-opcion-seleccion-borrar='".$id_opcion_seleccion."' id-fila='filaSeleccion".$id_opcion_seleccion."' title='Eliminar selección'><span class='glyphicon glyphicon-trash'></span></div>";
+        $t_opcion_seleccion_det.= "</td>";
+        
+        $datos['preview'] = $t_opcion_seleccion_det;
+
+        return $this->getResponse()->setContent(Json::encode($datos));
+    }
+    
+    public function nuevaseleccionAction() {
+        
+        $campana = $this->params()->fromPost("campana", null);
+        $campana_opcion = $this->params()->fromPost("campana_opcion", null);
+
+        $viewmodel = new ViewModel();
+        $viewmodel->setTerminal(true);
+        
+        $form = new CampanaseleccionopcionForm();
+
+        $form->get('pks_opcion_seleccion')->setValue('');
+        $form->get('pks_campana_opcion')->setValue($campana_opcion);
+        $form->get('pks_campana')->setValue($campana);
+        $form->get('tipo_seleccion')->setValue('1');
+        $form->get('descripcion_primaria')->setValue('');
+        $form->get('descripcion_secundaria')->setValue('');
+        $form->get('dias_bloqueo')->setValue('');
+        $form->get('valor_inicial')->setValue('0');
+        $form->get('valor_final')->setValue('-1');
+        $form->get('incremento')->setValue('1');
+        $form->get('importe_seleccion')->setValue('0.00');
+        $form->get('descripcion_interna')->setValue('');
+        $form->get('utiliza_descripcion_precio')->setValue('1');
+        
+        $viewmodel->form = $form;
+        
+        return $viewmodel;
+        
+    }
+    
+    public function editarseleccionAction() {
+
+        $opcionseleccion = $this->params()->fromPost("opcion_seleccion", null);
+
+        $serviceLocator = $this->getServiceLocator();
+        $config = $serviceLocator->get('Config');
+        $simbolo_moneda = $config['moneda']['simbolo'];
+        $campanaOpcionTable = $serviceLocator->get('Dashboard\Model\CupopcionseleccionTable');
+        $campanaOpcionSeleccionDetalleTable = $serviceLocator->get('Dashboard\Model\CupopcionselecciondetalleTable');
+
+        $seleccionData = $campanaOpcionTable->getSeleccionOpcionId($opcionseleccion);
+        $selecciondetalleData = $campanaOpcionSeleccionDetalleTable->getSeleccionOpcionDetalleId($opcionseleccion);
+        
+        $viewmodel = new ViewModel();
+        $viewmodel->setTerminal(true);
+        
+        $form = new CampanaseleccionopcionForm();
+
+        foreach ($seleccionData as $seleccion) {
+            $form->get('pks_opcion_seleccion')->setValue($seleccion['id_opcion_seleccion']);
+            $form->get('pks_campana_opcion')->setValue($seleccion['id_campana_opcion']);
+            $form->get('pks_campana')->setValue($seleccion['id_campana']);
+            $form->get('tipo_seleccion')->setValue($seleccion['tipo_seleccion']);
+            $form->get('descripcion_primaria')->setValue($seleccion['descripcion_primaria']);
+            $form->get('descripcion_secundaria')->setValue($seleccion['descripcion_secundaria']);
+            $form->get('dias_bloqueo')->setValue($seleccion['dias_bloqueo']);
+            $form->get('valor_inicial')->setValue($seleccion['valor_inicial']);
+            $form->get('valor_final')->setValue($seleccion['valor_final']);
+            $form->get('incremento')->setValue($seleccion['incremento']);
+            $form->get('importe_seleccion')->setValue($seleccion['importe_seleccion']);
+            $form->get('descripcion_interna')->setValue($seleccion['descripcion_interna']);
+            $form->get('utiliza_descripcion_precio')->setValue($seleccion['utiliza_descripcion_precio']);
+        }
+                
+        $viewmodel->form = $form;
+        $viewmodel->setVariable('selecciondetalle', $selecciondetalleData);
+        $viewmodel->setVariable('simbolo_moneda', $simbolo_moneda);
+        
+        return $viewmodel;
+        
+    }
+    
+    public function borrarseleccionAction() {
+
+        $opcionseleccion = $this->params()->fromPost("opcion_seleccion", null);
+
+        $serviceLocator = $this->getServiceLocator();
+        $campanaSeleccionTable = $serviceLocator->get('Dashboard\Model\CupopcionseleccionTable');
+
+        $campanaSeleccionTable->delSeleccionxOpcionId($opcionseleccion);
+
+        return $this->getResponse()->setContent(Json::encode(array('data' => '1')));
     }
     
 }

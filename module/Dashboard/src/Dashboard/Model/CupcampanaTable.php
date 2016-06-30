@@ -11,6 +11,7 @@ use Zend\Db\TableGateway\TableGateway;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
 use Zend\Db\Sql\Expression;
+use Zend\Db\Sql\Predicate\In;
 use Zend\Authentication\AuthenticationService;
 use Zend\Stdlib\ArrayUtils;
 use Zend\Db\Sql\Predicate\Between;
@@ -292,7 +293,19 @@ class CupcampanaTable {
             'cantidad'
         ))
         ->from('cup_campana_opcion')
-        ->where(array('id_campana' => $id_campana));
+        ->join('cup_opcion_seleccion', new Expression("cup_campana_opcion.id_campana_opcion = cup_opcion_seleccion.id_campana_opcion and cup_campana_opcion.id_campana = cup_opcion_seleccion.id_campana"),
+                array('descripcion_primaria',
+                      'id_opcion_seleccion',
+                      'tipo_seleccion',
+                      'dias_bloqueo',
+                      'descripcion_secundaria',
+                      'valor_inicial',
+                      'valor_final', 
+                      'incremento',
+                      'utiliza_descripcion_precio',
+                      'importe_seleccion',
+                      'descripcion_interna'),'left')
+        ->where(array('cup_campana_opcion.id_campana' => $id_campana));
 
         $statement = $sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();
@@ -300,10 +313,36 @@ class CupcampanaTable {
         return ArrayUtils::iteratorToArray($result);
     }
     
-    public function getCampanaOpcionId($id_opcion)
+    public function getCampanaSeleccionDetalle($id_campana)
     {
         $sql = new Sql($this->tableGateway->adapter);
                 
+        $select = $sql->select();
+        
+        $select->columns(array())
+        ->from('cup_campana_opcion')
+        ->join('cup_opcion_seleccion', new Expression("cup_campana_opcion.id_campana_opcion = cup_opcion_seleccion.id_campana_opcion and cup_campana_opcion.id_campana = cup_opcion_seleccion.id_campana"),
+                array('id_opcion_seleccion'))
+        ->join('cup_opcion_seleccion_detalle', new Expression("cup_opcion_seleccion.id_opcion_seleccion = cup_opcion_seleccion_detalle.id_opcion_seleccion"),
+                array('id_opcion_seleccion_detalle',
+                      'cantidad_seleccion',
+                      'importe_seleccion'))
+        ->where(array('cup_campana_opcion.id_campana' => $id_campana));
+
+        $statement = $sql->prepareStatementForSqlObject($select);
+        $result = $statement->execute();
+
+        return ArrayUtils::iteratorToArray($result);
+    }
+    
+    public function getCampanaOpcionId($id_opcion,$seleccion)
+    {
+        $sql = new Sql($this->tableGateway->adapter);
+        
+        error_log(print_r($seleccion,true));
+        //$seleccion = array('147','156','162');
+        $opciones_seleccion = implode(",", $seleccion);
+
         $select = $sql->select();
         
         $select->columns(array(
@@ -317,7 +356,11 @@ class CupcampanaTable {
             'descuento'  => new Expression("100-ROUND(precio_especial*100/precio_regular)")
         ))
         ->from('cup_campana_opcion')
-        ->where(array('id_campana_opcion' => $id_opcion));
+        ->join('cup_opcion_seleccion', new Expression("cup_campana_opcion.id_campana_opcion = cup_opcion_seleccion.id_campana_opcion and cup_opcion_seleccion.tipo_seleccion = '1'"), 
+                        array('cantidad_seleccion' => new Expression("COUNT(cup_opcion_seleccion.id_campana_opcion)")),'left')
+        ->join('cup_opcion_seleccion_detalle', new Expression("cup_opcion_seleccion.id_opcion_seleccion = cup_opcion_seleccion_detalle.id_opcion_seleccion AND cup_opcion_seleccion_detalle.id_opcion_seleccion_detalle IN (".$opciones_seleccion.")"), 
+                        array('total_seleccion' => new Expression("SUM(cup_opcion_seleccion_detalle.importe_seleccion)")),'left')
+        ->where(array('cup_campana_opcion.id_campana_opcion' => $id_opcion));
 
         $statement = $sql->prepareStatementForSqlObject($select);
         $result = $statement->execute();
